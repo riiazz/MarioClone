@@ -59,14 +59,14 @@ void Vec2::operator/=(const Vec2& v)
 	this->y /= v.y;
 }
 
-void Vec2::Normalize()
+void Vec2::normalize()
 {
-	int l = Length();
+	int l = length();
 	this->x = this->x / l;
 	this->y = this->y / l;
 }
 
-double Vec2::Length() const
+double Vec2::length() const
 {
 	return sqrtf((this->x* this->x) + (this->y* this->y));
 }
