@@ -30,6 +30,7 @@ class CBoundingBox : public Component
 public:
 	Vec2 size = { 0.0f, 0.0f };
 
+	CBoundingBox(){}
 	CBoundingBox(const Vec2& _size) : size(_size){}
 };
 
@@ -53,6 +54,7 @@ public:
 	float total = 0;
 	float remaining = 0;
 
+	CLifespan(){}
 	CLifespan(float _total) : total(_total), remaining(_total){}
 };
 

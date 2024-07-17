@@ -5,12 +5,12 @@
 #include "Component.h"
 
 typedef std::tuple<
-	std::shared_ptr<CTransform>,
-	std::shared_ptr<CBoundingBox>,
-	std::shared_ptr<CInput>,
-	std::shared_ptr<CLifespan>,
-	std::shared_ptr<CState>,
-	std::shared_ptr<CGravity>> Components;
+	CTransform,
+	CBoundingBox,
+	CInput,
+	CLifespan,
+	CState,
+	CGravity> Components;
 
 class Entity
 {
@@ -24,6 +24,9 @@ class Entity
 public:
 	Entity(const std::string& _tag, size_t _id) : m_id(_id), m_tag(_tag) {}
 
+	size_t getId() const;
+	bool isActive() const;
+	std::string getTag() const;
 	void destroy();
 
 	// Parameter packing. && means it's an r-value reference
@@ -31,20 +34,27 @@ public:
 	// Ex: entity->addComponent<CInput>();
 	template <typename T, typename... Targs>
 	T& addComponent(Targs&&... mArgs) {
-		//TODO here
+		auto& comp = std::get<T>(m_components);
+		comp = T(std::forward<Targs>(mArgs)...);
+		comp.has = true;
+		return comp;
 	}
 
 	template <typename T>
-	bool hasComponent() const {
-		return getComponent<T>()->has;
+	bool hasComponent() {
+		return getComponent<T>().has;
 	}
 
 	template <typename T>
-	T& getComponent() const 
+	T& getComponent() 
 	{
 		return std::get<T>(m_components);
 	}
 
 	template <typename T>
-	void removeComponent();
+	void removeComponent() {
+		auto& comp = std::get<T>(m_components);
+		comp = NULL;
+		comp.has = false;
+	}
 };
