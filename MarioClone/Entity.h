@@ -14,15 +14,16 @@ typedef std::tuple<
 
 class Entity
 {
+	friend class EntityManager;
+
 	Components m_components;
 	std::string m_tag = "default";
 	bool m_active = true;
 	size_t m_id = 0;
 
-	
+	Entity(const std::string& _tag, size_t _id) : m_id(_id), m_tag(_tag) {}
 	
 public:
-	Entity(const std::string& _tag, size_t _id) : m_id(_id), m_tag(_tag) {}
 
 	size_t getId() const;
 	bool isActive() const;
@@ -41,12 +42,18 @@ public:
 	}
 
 	template <typename T>
-	bool hasComponent() {
+	bool hasComponent() const{
 		return getComponent<T>().has;
 	}
 
 	template <typename T>
-	T& getComponent() 
+	T& getComponent()
+	{
+		return std::get<T>(m_components);
+	}
+
+	template <typename T>
+	const T& getComponent() const 
 	{
 		return std::get<T>(m_components);
 	}
