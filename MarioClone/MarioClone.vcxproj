@@ -133,22 +133,26 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Entity.cpp" />
-    <ClCompile Include="EntityManager.cpp" />
+    <ClCompile Include="Entity\Entity.cpp" />
+    <ClCompile Include="Entity\EntityManager.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Vec2.cpp" />
+    <ClCompile Include="System\Scene.cpp" />
+    <ClCompile Include="System\ScenePlay.cpp" />
+    <ClCompile Include="utils\Vec2.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="config.txt" />
   </ItemGroup>
   <ItemGroup>
-    <Font Include="RobotRebels.ttf" />
+    <Font Include="assets\RobotRebels.ttf" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Component.h" />
-    <ClInclude Include="Entity.h" />
-    <ClInclude Include="EntityManager.h" />
-    <ClInclude Include="Vec2.h" />
+    <ClInclude Include="Component\Component.h" />
+    <ClInclude Include="Entity\Entity.h" />
+    <ClInclude Include="Entity\EntityManager.h" />
+    <ClInclude Include="System\Scene.h" />
+    <ClInclude Include="System\ScenePlay.h" />
+    <ClInclude Include="utils\Vec2.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

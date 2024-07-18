@@ -1,8 +1,6 @@
 #include <SFML/Graphics.hpp>
 #include <iostream>
-#include "Vec2.h"
-#include "Entity.h"
-#include "EntityManager.h"
+#include "Entity/EntityManager.h"
 
 int main()
 {

@@ -2,7 +2,7 @@
 
 #include <tuple>
 #include <iostream>
-#include "Component.h"
+#include "../Component/Component.h"
 
 typedef std::tuple<
 	CTransform,

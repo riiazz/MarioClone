@@ -1,6 +1,7 @@
 #pragma once
 #include <map>
-#include "EntityManager.h"
+#include <string>
+#include "../Entity/EntityManager.h"
 
 typedef std::map<int, std::string> ActionMap;
 
