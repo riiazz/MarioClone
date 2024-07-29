@@ -133,6 +133,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="assets\Assets.cpp" />
+    <ClCompile Include="System\GameEngine.cpp" />
+    <ClCompile Include="System\Animation.cpp" />
     <ClCompile Include="Entity\Entity.cpp" />
     <ClCompile Include="Entity\EntityManager.cpp" />
     <ClCompile Include="main.cpp" />
@@ -147,6 +150,9 @@
     <Font Include="assets\RobotRebels.ttf" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="assets\Assets.h" />
+    <ClInclude Include="System\GameEngine.h" />
+    <ClInclude Include="System\Animation.h" />
     <ClInclude Include="Component\Component.h" />
     <ClInclude Include="Entity\Entity.h" />
     <ClInclude Include="Entity\EntityManager.h" />
