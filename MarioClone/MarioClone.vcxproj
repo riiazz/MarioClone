@@ -133,6 +133,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Component\Action.cpp" />
     <ClCompile Include="assets\Assets.cpp" />
     <ClCompile Include="System\GameEngine.cpp" />
     <ClCompile Include="System\Animation.cpp" />
@@ -150,6 +151,7 @@
     <Font Include="assets\RobotRebels.ttf" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Component\Action.h" />
     <ClInclude Include="assets\Assets.h" />
     <ClInclude Include="System\GameEngine.h" />
     <ClInclude Include="System\Animation.h" />

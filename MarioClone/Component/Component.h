@@ -77,7 +77,6 @@ public:
 };
 
 //Component animation here
-/*
 class CAnimation : public Component
 {
 	Animation animation;
@@ -86,4 +85,3 @@ class CAnimation : public Component
 	CAnimation(){}
 	CAnimation(const Animation& _animation, bool _repeat) : animation(_animation), repeat(_repeat){}
 };
-*/

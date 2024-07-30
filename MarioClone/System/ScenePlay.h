@@ -12,7 +12,10 @@ class ScenePlay : public Scene
 	PlayerConfig m_playerConfig;
 
 public:
-	void update();
+	void update() override;
+	void sDoAction(const Action& action) override;
+	void sRender() override;
+	void onEnd() override;
 	
 	//Systems
 	void sAnimation();
@@ -20,7 +23,6 @@ public:
 	void sEnemySpawner();
 	void sCollision();
 	void sRender();
-	//void sDoAction(const Action& action);
 	void sDebug();
 };
 
