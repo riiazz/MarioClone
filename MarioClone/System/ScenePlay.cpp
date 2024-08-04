@@ -2,7 +2,7 @@
 
 void ScenePlay::update()
 {
-	std::cout << "CALLS UPDATE FROM SCENE PLAY" << std::endl;
+	//std::cout << "CALLS UPDATE FROM SCENE PLAY" << std::endl;
 }
 
 void ScenePlay::sDoAction(const Action& action)
@@ -12,14 +12,17 @@ void ScenePlay::sDoAction(const Action& action)
 		if (action.name() == "JUMP")
 		{
 			m_player->getComponent<CInput>().up = true;
+			std::cout << "jump" << std::endl;
 		}
 		else if (action.name() == "LEFT")
 		{
 			m_player->getComponent<CInput>().left = true;
+			std::cout << "left" << std::endl;
 		}
 		else if (action.name() == "RIGHT")
 		{
 			m_player->getComponent<CInput>().right = true;
+			std::cout << "right" << std::endl;
 		}
 		else if (action.name() == "EXIT")
 		{
@@ -28,6 +31,7 @@ void ScenePlay::sDoAction(const Action& action)
 		else if (action.name() == "PAUSE")
 		{
 			setPaused(!m_paused);
+			std::cout << "pause" << std::endl;
 		}
 		
 		//toggle_grid
@@ -61,6 +65,7 @@ void ScenePlay::sRender()
 void ScenePlay::onEnd()
 {
 	//TODO: Implement this
+	m_game->quit();
 }
 
 void ScenePlay::init(const std::string& levelPath)
@@ -79,6 +84,7 @@ void ScenePlay::sSpawnPlayer()
 	m_player = m_entities.addEntity("player");
 	m_player->addComponent<CTransform>(Vec2(100, 200), Vec2(0.0f, 0.0f), Vec2(4.0f, 4.0f), 0);
 	m_player->addComponent<CState>("idleRight");
+	std::cout << "Player -> " << m_player->getId() << std::endl;
 }
 
 ScenePlay::ScenePlay(GameEngine* gameEngine, const std::string& levelPath)

@@ -3,6 +3,8 @@
 
 void GameEngine::init()
 {
+    m_window.create(sf::VideoMode(360, 200), "MarioClone");
+    m_window.setFramerateLimit(60);
     changeScene("LEVEL1", std::make_shared<ScenePlay>(this, "2"));
 }
 
@@ -13,18 +15,15 @@ std::shared_ptr<Scene> GameEngine::currentScene()
 
 void GameEngine::run()
 {
-    //debug purpose only
-    int i = 0;
-    while (m_running && i < 100) {
+    while (isRunning()) {
         update();
-        i++;
     }
     m_window.close();
 }
 
 void GameEngine::update()
 {
-    //sUserInput();
+    sUserInput();
     currentScene()->update();
 }
 
@@ -44,7 +43,32 @@ Assets& GameEngine::getAssets()
     return m_assets;
 }
 
+const bool GameEngine::isRunning() const
+{
+    return m_running && m_window.isOpen();
+}
+
 Window& GameEngine::window()
 {
     return m_window;
+}
+
+void GameEngine::sUserInput()
+{
+    sf::Event event;
+    while (m_window.pollEvent(event))
+    {
+        if (event.type == sf::Event::Closed)
+        {
+            quit();
+        }
+        else if (event.type == sf::Event::KeyPressed || event.type == sf::Event::KeyReleased)
+        {
+            auto& actions = currentScene()->getActions();
+            if (actions.find(event.key.code) == actions.end()) continue;
+
+            const std::string& actionType = (event.type == sf::Event::KeyPressed) ? "START" : "END";
+            currentScene()->sDoAction(Action(actions.at(event.key.code), actionType));
+        }
+    }
 }

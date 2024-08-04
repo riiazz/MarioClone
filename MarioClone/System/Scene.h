@@ -6,7 +6,7 @@
 #include "../Component/Action.h"
 
 class GameEngine;
-typedef std::map<int, std::string> ActionMap;
+typedef std::unordered_map<int, std::string> ActionMap;
 
 class Scene {
 protected:

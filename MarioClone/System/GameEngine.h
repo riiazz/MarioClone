@@ -27,6 +27,7 @@ public:
 	void quit();
 	void changeScene(const std::string& sceneName, std::shared_ptr<Scene> scene);
 	Assets& getAssets();
+	const bool isRunning() const;
 	Window& window();
 	void sUserInput();
 };
