@@ -3,6 +3,8 @@
 
 struct PlayerConfig {
 	//add config properties;
+	float X, Y, CX, CY, SPEED, MAXSPEED, JUMP, GRAVITY;
+	std::string WEAPON;
 };
 
 class ScenePlay : public Scene
@@ -11,18 +13,21 @@ class ScenePlay : public Scene
 	std::shared_ptr<Entity> m_player;
 	PlayerConfig m_playerConfig;
 
-public:
 	void update() override;
 	void sDoAction(const Action& action) override;
 	void sRender() override;
 	void onEnd() override;
 	
 	//Systems
+	void init(const std::string& levelPath);
+	void sSpawnPlayer();
 	void sAnimation();
 	void sMovement();
 	void sEnemySpawner();
 	void sCollision();
-	void sRender();
 	void sDebug();
+
+public:
+	ScenePlay(GameEngine* gameEngine, const std::string& levelPath);
 };
 

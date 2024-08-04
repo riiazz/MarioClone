@@ -17,7 +17,7 @@ Animation& Assets::getAnimation(const std::string& name)
 
 sf::Sound& Assets::getSound(const std::string& name)
 {
-    return m_sounds[name];
+    //return m_sounds[name];
 }
 
 sf::Font& Assets::getFont(const std::string& name)

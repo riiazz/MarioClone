@@ -4,6 +4,8 @@
 #include "Scene.h"
 #include "../assets/Assets.h"
 
+class Scene;
+
 typedef std::unordered_map<std::string, std::shared_ptr<Scene>> Scenes;
 typedef sf::RenderWindow Window;
 
@@ -18,7 +20,7 @@ class GameEngine
 	void init();
 	std::shared_ptr<Scene> currentScene();
 public:
-	GameEngine() = default;
+	GameEngine() { init();};
 
 	void run();
 	void update();

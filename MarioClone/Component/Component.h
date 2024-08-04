@@ -2,6 +2,7 @@
 
 #include <SFML/Graphics.hpp>
 #include "../utils/Vec2.h"
+#include "../System/Animation.h"
 
 class Component
 {

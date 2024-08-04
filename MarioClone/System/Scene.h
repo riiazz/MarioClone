@@ -5,11 +5,12 @@
 #include "GameEngine.h"
 #include "../Component/Action.h"
 
+class GameEngine;
 typedef std::map<int, std::string> ActionMap;
 
 class Scene {
 protected:
-	std::shared_ptr<GameEngine> m_game;
+	GameEngine* m_game;
 	EntityManager m_entities;
 	int currentFrame = 0;
 	ActionMap m_actionMap;
@@ -18,7 +19,7 @@ protected:
 
 public:
 	Scene(){}
-	Scene(const std::shared_ptr<GameEngine>& engine) : m_game(engine) {}
+	Scene(GameEngine* engine) : m_game(engine) {}
 	virtual ~Scene(){}
 
 	virtual void update() = 0;

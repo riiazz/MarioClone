@@ -13,7 +13,7 @@ class Assets
 {
 	Textures m_textures;
 	Animations m_animations;
-	Sounds m_sounds;
+	//Sounds m_sounds;
 	Fonts m_fonts;
 
 public:

@@ -1,4 +1,10 @@
 #include "GameEngine.h"
+#include "ScenePlay.h"
+
+void GameEngine::init()
+{
+    changeScene("LEVEL1", std::make_shared<ScenePlay>(this, "2"));
+}
 
 std::shared_ptr<Scene> GameEngine::currentScene()
 {
@@ -7,15 +13,18 @@ std::shared_ptr<Scene> GameEngine::currentScene()
 
 void GameEngine::run()
 {
-    while (m_running) {
+    //debug purpose only
+    int i = 0;
+    while (m_running && i < 100) {
         update();
+        i++;
     }
     m_window.close();
 }
 
 void GameEngine::update()
 {
-    sUserInput();
+    //sUserInput();
     currentScene()->update();
 }
 
