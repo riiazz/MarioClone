@@ -15,4 +15,9 @@ sf::Sprite& Animation::getSprite()
     return m_sprite;
 }
 
+sf::Texture& Animation::getTexture()
+{
+    return m_texture;
+}
+
 

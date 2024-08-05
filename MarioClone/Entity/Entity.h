@@ -10,7 +10,8 @@ typedef std::tuple<
 	CInput,
 	CLifespan,
 	CState,
-	CGravity> Components;
+	CGravity,
+	CAnimation> Components;
 
 class Entity
 {

@@ -3,6 +3,7 @@
 void ScenePlay::update()
 {
 	//std::cout << "CALLS UPDATE FROM SCENE PLAY" << std::endl;
+	sRender();
 }
 
 void ScenePlay::sDoAction(const Action& action)
@@ -58,8 +59,13 @@ void ScenePlay::sDoAction(const Action& action)
 }
 
 void ScenePlay::sRender()
-{
+{	
 	//TODO: Implement this
+	auto& window = m_game->window();
+
+	window.clear();
+	window.draw(m_player->getComponent<CAnimation>().animation.getSprite());
+	window.display();
 }
 
 void ScenePlay::onEnd()
@@ -85,6 +91,20 @@ void ScenePlay::sSpawnPlayer()
 	m_player->addComponent<CTransform>(Vec2(100, 200), Vec2(0.0f, 0.0f), Vec2(4.0f, 4.0f), 0);
 	m_player->addComponent<CState>("idleRight");
 	std::cout << "Player -> " << m_player->getId() << std::endl;
+
+	sf::Texture texture;
+	if (!texture.loadFromFile("assets/images/characters-sprite.png"))
+	{
+		std::cout << "failed load sprite" << std::endl;
+	}
+	m_texture = texture;
+	sf::Sprite sprite;
+	sf::IntRect rect(0, 0, 16, 16);
+	sprite.setTexture(m_texture);
+	sprite.setTextureRect(rect);
+
+	Animation anim(sprite, texture, "player", 1, 0, Vec2(0, 0));
+	m_player->addComponent<CAnimation>(anim, false);
 }
 
 ScenePlay::ScenePlay(GameEngine* gameEngine, const std::string& levelPath)

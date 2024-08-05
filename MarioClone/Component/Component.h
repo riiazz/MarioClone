@@ -80,6 +80,7 @@ public:
 //Component animation here
 class CAnimation : public Component
 {
+public:
 	Animation animation;
 	bool repeat = false;
 

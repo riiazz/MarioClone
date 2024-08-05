@@ -162,6 +162,11 @@
     <ClInclude Include="System\ScenePlay.h" />
     <ClInclude Include="utils\Vec2.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Image Include="assets\images\characters-sprite.gif" />
+    <Image Include="assets\images\characters-sprite.png" />
+    <Image Include="assets\images\world-sprite.png" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
