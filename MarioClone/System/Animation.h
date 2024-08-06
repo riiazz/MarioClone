@@ -5,25 +5,23 @@
 
 class Animation
 {
-	sf::Texture m_texture; //this could be just a temporary
 	sf::Sprite m_sprite;
 	int m_frameCount = 0;
 	int m_currentFrame = 0;
-	int m_speed = 0;
+	int m_speed = 0; //speed in frame, the smaller the value the faster animation runs
+	size_t m_gameFrame = 0; //number of frame this animation runs
 	Vec2 m_size = 0;
 	std::string m_name;
 
 public:
 	Animation() = default;
-	Animation(sf::Sprite& sprite, sf::Texture& texture, const std::string& name, int frameCount, int speed, const Vec2& size)
-		: m_sprite(sprite), m_texture(texture), m_name(name), m_frameCount(frameCount), m_speed(speed), m_size(size)
-	{}
+	Animation(sf::Texture& texture, const std::string& name, int frameCount, int speed);
 
+	void init();
 	void update();
-	void hasEnded();
+	bool hasEnded();
 	std::string& getName();
 	const Vec2& getSize() const;
 	sf::Sprite& getSprite();
-	sf::Texture& getTexture();
 };
 

@@ -3,7 +3,7 @@
 void ScenePlay::update()
 {
 	//std::cout << "CALLS UPDATE FROM SCENE PLAY" << std::endl;
-	sRender();
+	//sRender();
 }
 
 void ScenePlay::sDoAction(const Action& action)
@@ -103,8 +103,8 @@ void ScenePlay::sSpawnPlayer()
 	sprite.setTexture(m_texture);
 	sprite.setTextureRect(rect);
 
-	Animation anim(sprite, texture, "player", 1, 0, Vec2(0, 0));
-	m_player->addComponent<CAnimation>(anim, false);
+	//Animation anim(sprite, texture, "player", 1, 0, Vec2(0, 0));
+	//m_player->addComponent<CAnimation>(anim, false);
 }
 
 ScenePlay::ScenePlay(GameEngine* gameEngine, const std::string& levelPath)
