@@ -12,8 +12,6 @@ class ScenePlay : public Scene
 	std::string m_levelPath;
 	std::shared_ptr<Entity> m_player;
 	PlayerConfig m_playerConfig;
-	//temporary
-	sf::Texture m_texture;
 
 	void update() override;
 	void sDoAction(const Action& action) override;

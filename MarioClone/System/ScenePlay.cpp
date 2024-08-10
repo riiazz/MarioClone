@@ -3,7 +3,8 @@
 void ScenePlay::update()
 {
 	//std::cout << "CALLS UPDATE FROM SCENE PLAY" << std::endl;
-	//sRender();
+	m_player->getComponent<CAnimation>().animation.update(); //temporary
+	sRender();
 }
 
 void ScenePlay::sDoAction(const Action& action)
@@ -88,23 +89,17 @@ void ScenePlay::init(const std::string& levelPath)
 void ScenePlay::sSpawnPlayer()
 {
 	m_player = m_entities.addEntity("player");
-	m_player->addComponent<CTransform>(Vec2(100, 200), Vec2(0.0f, 0.0f), Vec2(4.0f, 4.0f), 0);
+	auto& t = m_player->addComponent<CTransform>(Vec2(100, 150), Vec2(0.0f, 0.0f), Vec2(1.0f, 1.0f), 0);
+
+	auto& animation = m_game->getAssets().getAnimation("player");
+	animation.getSprite().setPosition(t.pos.x, t.pos.y);
+	m_player->addComponent<CAnimation>(animation, false);
+	m_player->addComponent<CBoundingBox>(animation.getSize());
 	m_player->addComponent<CState>("idleRight");
+	m_player->addComponent<CGravity>(9.8f);
+	m_player->addComponent<CInput>();
+
 	std::cout << "Player -> " << m_player->getId() << std::endl;
-
-	sf::Texture texture;
-	if (!texture.loadFromFile("assets/images/characters-sprite.png"))
-	{
-		std::cout << "failed load sprite" << std::endl;
-	}
-	m_texture = texture;
-	sf::Sprite sprite;
-	sf::IntRect rect(0, 0, 16, 16);
-	sprite.setTexture(m_texture);
-	sprite.setTextureRect(rect);
-
-	//Animation anim(sprite, texture, "player", 1, 0, Vec2(0, 0));
-	//m_player->addComponent<CAnimation>(anim, false);
 }
 
 ScenePlay::ScenePlay(GameEngine* gameEngine, const std::string& levelPath)

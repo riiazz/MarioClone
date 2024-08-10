@@ -6,7 +6,7 @@ void Assets::addTexture(const std::string& name, const std::string& path)
 	sf::Texture texture;
 	if (!texture.loadFromFile(path))
 	{
-		std::cout << "failed load sprite" << std::endl;
+		std::cout << "failed load sprite -> " << name << std::endl;
 		return;
 	}
 	m_textures[name] = texture;
@@ -18,7 +18,7 @@ void Assets::addTexture(const std::string& name, const std::string& path, float 
 	sf::Texture texture;
 	if (!texture.loadFromFile(path, area))
 	{
-		std::cout << "failed load sprite" << std::endl;
+		std::cout << "failed load sprite -> " << name << std::endl;
 		return;
 	}
 	m_textures[name] = texture;
@@ -33,7 +33,7 @@ void Assets::addSound(const std::string& name, const std::string& path)
 {
 	sf::SoundBuffer buffer;
 	if (!buffer.loadFromFile(path)) {
-		std::cout << "failed to load sound" << std::endl;
+		std::cout << "failed to load sound -> " << name << std::endl;
 		return;
 	}
 	m_sounds[name] = buffer;
@@ -43,7 +43,7 @@ void Assets::addFont(const std::string& name, const std::string& path)
 {
 	sf::Font font;
 	if (!font.loadFromFile(path)) {
-		std::cout << "failed to load font" << std::endl;
+		std::cout << "failed to load font -> " << name << std::endl;
 		return;
 	}
 	m_fonts[name] = font;

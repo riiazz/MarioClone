@@ -5,12 +5,29 @@ void GameEngine::init()
 {
     m_window.create(sf::VideoMode(360, 200), "MarioClone");
     m_window.setFramerateLimit(60);
+
+    loadAssets();
     changeScene("LEVEL1", std::make_shared<ScenePlay>(this, "2"));
 }
 
 std::shared_ptr<Scene> GameEngine::currentScene()
 {
     return m_scenes[m_currentScene];
+}
+
+void GameEngine::loadAssets()
+{
+    //load font
+    m_assets.addFont("font1", "assets/RobotRebels.ttf");
+
+    //load texture
+    m_assets.addTexture("player", "assets/images/characters-sprite.png", 16, 0, 16 * 3, 16);
+
+    //load animation
+    m_assets.addAnimation("player", Animation(m_assets.getTexture("player"), "player", 3, 12));
+
+    //load soundBuffer
+    //m_assets.addSound()
 }
 
 void GameEngine::run()

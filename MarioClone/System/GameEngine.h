@@ -19,6 +19,7 @@ class GameEngine
 
 	void init();
 	std::shared_ptr<Scene> currentScene();
+	void loadAssets();
 public:
 	GameEngine() { init();};
 
