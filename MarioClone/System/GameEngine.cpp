@@ -1,12 +1,14 @@
 #include "GameEngine.h"
 #include "ScenePlay.h"
+#include <fstream>
+#include <sstream>
 
-void GameEngine::init()
+void GameEngine::init(const std::string& configPath, const std::string& assetConfigPath)
 {
     m_window.create(sf::VideoMode(360, 200), "MarioClone");
     m_window.setFramerateLimit(60);
 
-    loadAssets();
+	readAssetConfig(assetConfigPath);
     changeScene("LEVEL1", std::make_shared<ScenePlay>(this, "2"));
 }
 
@@ -15,19 +17,53 @@ std::shared_ptr<Scene> GameEngine::currentScene()
     return m_scenes[m_currentScene];
 }
 
-void GameEngine::loadAssets()
+void GameEngine::readAssetConfig(const std::string& assetConfigPath)
 {
-    //load font
-    m_assets.addFont("font1", "assets/RobotRebels.ttf");
-
-    //load texture
-    m_assets.addTexture("player", "assets/images/characters-sprite.png", 16, 0, 16 * 3, 16);
-
-    //load animation
-    m_assets.addAnimation("player", Animation(m_assets.getTexture("player"), "player", 3, 12));
-
-    //load soundBuffer
-    //m_assets.addSound()
+	std::ifstream fileStream(assetConfigPath);
+	if (!fileStream.is_open())
+		std::cout << "Failed to open the file!!!" << std::endl;
+	std::string line;
+	while (std::getline(fileStream, line)) {
+		std::istringstream s(line);
+		std::string type;
+		s >> type;
+		if (type == "Font") {
+			std::string name;
+			std::string path;
+			s >> name;
+			s >> path;
+			m_assets.addFont(name, path);
+		}
+		else if (type == "Sound") {
+			std::string name;
+			std::string path;
+			s >> name;
+			s >> path;
+			m_assets.addFont(name, path);
+		}
+		else if (type == "Texture") {
+			std::string name;
+			std::string path;
+			float x, y, width, height;
+			s >> name;
+			s >> path;
+			if (s >> x >> y >> width >> height) {
+				m_assets.addTexture(name, path, x, y, width, height);
+				continue;
+			}
+			m_assets.addTexture(name, path);
+		}
+		else if (type == "Animation") {
+			std::string name;
+			std::string textureName;
+			std::string path;
+			int frameCount, speed;
+			s >> name >> textureName;
+			s >> frameCount >> speed;
+			m_assets.addAnimation(name, Animation(m_assets.getTexture(textureName), name, frameCount, speed));
+		}
+	}
+	fileStream.close();
 }
 
 void GameEngine::run()

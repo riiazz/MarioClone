@@ -1,0 +1,4 @@
+Font robotRebels assets/RobotRebels.ttf
+//Sound [name] [path]
+Texture player assets/images/characters-sprite.png 16 0 48 16
+Animation player player 3 5

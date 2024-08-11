@@ -6,7 +6,7 @@
 
 int main()
 {
-    GameEngine g;
+    GameEngine g("config.txt", "assets.txt");
     g.run();
 
 	/*sf::RenderWindow m_window;

@@ -17,11 +17,12 @@ class GameEngine
 	std::string m_currentScene;
 	bool m_running = true;
 
-	void init();
+	void init(const std::string& configPath, const std::string& assetConfigPath);
 	std::shared_ptr<Scene> currentScene();
-	void loadAssets();
+	void readAssetConfig(const std::string& assetConfigPath);
+	
 public:
-	GameEngine() { init();};
+	GameEngine(const std::string& configPath, const std::string& assetConfigPath) { init(configPath, assetConfigPath);};
 
 	void run();
 	void update();
