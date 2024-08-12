@@ -21,6 +21,7 @@ class ScenePlay : public Scene
 	//Systems
 	void init(const std::string& levelPath);
 	void sSpawnPlayer();
+	void sPlayerMovement();
 	void sAnimation();
 	void sMovement();
 	void sEnemySpawner();
