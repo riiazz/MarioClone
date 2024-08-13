@@ -3,6 +3,7 @@
 void ScenePlay::update()
 {
 	//std::cout << "CALLS UPDATE FROM SCENE PLAY" << std::endl;
+	sAnimation();
 	m_player->getComponent<CAnimation>().animation.update(); //temporary
 	sMovement();
 	sRender();
@@ -16,19 +17,16 @@ void ScenePlay::sDoAction(const Action& action)
 		{
 			m_player->getComponent<CInput>().up = true;
 			m_player->getComponent<CState>().state = "jump";
-			std::cout << "jump" << std::endl;
 		}
 		else if (action.name() == "LEFT")
 		{
 			m_player->getComponent<CInput>().left = true;
 			m_player->getComponent<CState>().state = "runLeft";
-			std::cout << "left" << std::endl;
 		}
 		else if (action.name() == "RIGHT")
 		{
 			m_player->getComponent<CInput>().right = true;
 			m_player->getComponent<CState>().state = "runRight";
-			std::cout << "right" << std::endl;
 		}
 		else if (action.name() == "EXIT")
 		{
@@ -37,7 +35,6 @@ void ScenePlay::sDoAction(const Action& action)
 		else if (action.name() == "PAUSE")
 		{
 			setPaused(!m_paused);
-			std::cout << "pause" << std::endl;
 		}
 		
 		//toggle_grid
@@ -98,7 +95,7 @@ void ScenePlay::sSpawnPlayer()
 	m_player = m_entities.addEntity("player");
 	auto& t = m_player->addComponent<CTransform>(Vec2(100, 150), Vec2(5.0f, 5.0f), Vec2(1.0f, 1.0f), 0);
 
-	auto& animation = m_game->getAssets().getAnimation("player");
+	auto& animation = m_game->getAssets().getAnimation("playerIdle");
 	animation.getSprite().setPosition(t.pos.x, t.pos.y);
 	m_player->addComponent<CAnimation>(animation, false);
 	m_player->addComponent<CBoundingBox>(animation.getSize());
@@ -111,7 +108,6 @@ void ScenePlay::sSpawnPlayer()
 
 void ScenePlay::sPlayerMovement()
 {
-	std::cout << m_player->getComponent<CState>().state << std::endl;
 	auto& transform = this->m_player->getComponent<CTransform>();
 	auto& input = this->m_player->getComponent<CInput>();
 	auto& boundingBox = this->m_player->getComponent<CBoundingBox>();
@@ -124,6 +120,40 @@ void ScenePlay::sPlayerMovement()
 	auto& sprite = this->m_player->getComponent<CAnimation>().animation.getSprite();
 	sprite.setPosition(transform.pos.x, transform.pos.y);
 	transform.prevPos = transform.pos;
+}
+
+void ScenePlay::setAnimation(std::shared_ptr<Entity> entity, const std::string& animationName, bool repeat)
+{
+	if (entity->getComponent<CAnimation>().animation.getName() == animationName)
+		return;
+	entity->getComponent<CAnimation>().animation = m_game->getAssets().getAnimation(animationName);
+	entity->getComponent<CAnimation>().repeat = repeat;
+}
+
+void ScenePlay::sAnimation()
+{
+	auto& state = m_player->getComponent<CState>().state;
+	auto& animation = m_player->getComponent<CAnimation>();
+
+	if (state == "idleRight") {
+		setAnimation(m_player, "playerIdle", true);
+		animation.animation.getSprite().setScale(1, 1);
+	}
+	else if (state == "idleLeft") {
+		setAnimation(m_player, "playerIdle", true);
+		animation.animation.getSprite().setScale(-1, 1);
+	}
+	else if (state == "runRight") {
+		setAnimation(m_player, "playerRun", true);
+		animation.animation.getSprite().setScale(1, 1);
+	}
+	else if (state == "runLeft") {
+		setAnimation(m_player, "playerRun", true);
+		animation.animation.getSprite().setScale(-1, 1);
+	}
+	else if (state == "jump") {
+		setAnimation(m_player, "playerJump", true);
+	}
 }
 
 void ScenePlay::sMovement()

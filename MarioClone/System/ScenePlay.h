@@ -22,6 +22,7 @@ class ScenePlay : public Scene
 	void init(const std::string& levelPath);
 	void sSpawnPlayer();
 	void sPlayerMovement();
+	void setAnimation(std::shared_ptr<Entity> entity, const std::string& animationName, bool repeat);
 	void sAnimation();
 	void sMovement();
 	void sEnemySpawner();
