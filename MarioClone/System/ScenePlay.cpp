@@ -3,8 +3,14 @@
 void ScenePlay::update()
 {
 	//std::cout << "CALLS UPDATE FROM SCENE PLAY" << std::endl;
+	m_entities.update();
 	sAnimation();
-	m_player->getComponent<CAnimation>().animation.update(); //temporary
+	m_player->getComponent<CAnimation>().animation.update();
+	auto& enemies = m_entities.getEntities("enemy");
+	for (auto& e : enemies)
+	{
+		e->getComponent<CAnimation>().animation.update();
+	}
 	sMovement();
 	sRender();
 }
@@ -70,6 +76,11 @@ void ScenePlay::sRender()
 
 	window.clear();
 	window.draw(m_player->getComponent<CAnimation>().animation.getSprite());
+	auto& enemies = m_entities.getEntities("enemy");
+
+	for (auto& e : enemies) {
+		window.draw(e->getComponent<CAnimation>().animation.getSprite());
+	}
 	window.display();
 }
 
@@ -88,6 +99,7 @@ void ScenePlay::init(const std::string& levelPath)
 	this->registerAction(sf::Keyboard::P, "PAUSE");
 
 	sSpawnPlayer();
+	sEnemySpawner();
 }
 
 void ScenePlay::sSpawnPlayer()
@@ -126,8 +138,7 @@ void ScenePlay::setAnimation(std::shared_ptr<Entity> entity, const std::string& 
 {
 	if (entity->getComponent<CAnimation>().animation.getName() == animationName)
 		return;
-	entity->getComponent<CAnimation>().animation = m_game->getAssets().getAnimation(animationName);
-	entity->getComponent<CAnimation>().repeat = repeat;
+	entity->getComponent<CAnimation>() = CAnimation(m_game->getAssets().getAnimation(animationName), repeat);
 }
 
 void ScenePlay::sAnimation()
@@ -159,6 +170,18 @@ void ScenePlay::sAnimation()
 void ScenePlay::sMovement()
 {
 	sPlayerMovement();
+}
+
+void ScenePlay::sEnemySpawner()
+{
+	auto koopa = m_entities.addEntity("enemy");
+	auto& transform = koopa->addComponent<CTransform>(Vec2(200, 150), Vec2(5.0f, 5.0f), Vec2(0, 0), 0);
+	koopa->addComponent<CState>("walk");
+	auto& animation = m_game->getAssets().getAnimation("redWalkKoopa");
+	auto& cAnimation = koopa->addComponent<CAnimation>(animation, true);
+	cAnimation.animation.getSprite().setPosition(transform.pos.x, transform.pos.y);
+	transform.prevPos = transform.pos;
+
 }
 
 ScenePlay::ScenePlay(GameEngine* gameEngine, const std::string& levelPath)

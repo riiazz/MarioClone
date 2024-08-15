@@ -99,5 +99,8 @@
     <Image Include="assets\images\characters-sprite.png">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="assets\images\RedKoopa.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>
