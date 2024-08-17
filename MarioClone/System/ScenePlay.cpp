@@ -170,6 +170,7 @@ void ScenePlay::sAnimation()
 void ScenePlay::sMovement()
 {
 	sPlayerMovement();
+	sEnemyMovement();
 }
 
 void ScenePlay::sEnemySpawner()
@@ -179,9 +180,24 @@ void ScenePlay::sEnemySpawner()
 	koopa->addComponent<CState>("walk");
 	auto& animation = m_game->getAssets().getAnimation("redWalkKoopa");
 	auto& cAnimation = koopa->addComponent<CAnimation>(animation, true);
+	koopa->addComponent<CBoundingBox>(Vec2(16, 15)); //temporary
 	cAnimation.animation.getSprite().setPosition(transform.pos.x, transform.pos.y);
 	transform.prevPos = transform.pos;
 
+}
+
+void ScenePlay::sEnemyMovement()
+{
+	auto& entities = m_entities.getEntities("enemy");
+	for (auto& e : entities) {
+		auto& transform = e->getComponent<CTransform>();
+		auto& boundingBox = e->getComponent<CBoundingBox>();
+		if (transform.pos.x - (boundingBox.size.x / 2) > 0) transform.pos.x -= transform.velocity.x;
+
+		auto& sprite = e->getComponent<CAnimation>().animation.getSprite();
+		sprite.setPosition(transform.pos.x, transform.pos.y);
+		transform.prevPos = transform.pos;
+	}
 }
 
 ScenePlay::ScenePlay(GameEngine* gameEngine, const std::string& levelPath)
