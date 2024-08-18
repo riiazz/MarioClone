@@ -11,6 +11,7 @@ void ScenePlay::update()
 	{
 		e->getComponent<CAnimation>().animation.update();
 	}
+	sCollision();
 	sMovement();
 	sRender();
 }
@@ -124,14 +125,34 @@ void ScenePlay::sPlayerMovement()
 	auto& input = this->m_player->getComponent<CInput>();
 	auto& boundingBox = this->m_player->getComponent<CBoundingBox>();
 
+	transform.prevPos = transform.pos;
+
+	bool isOverlapped = boundingBox.preOverlap.x > 0 && boundingBox.preOverlap.y > 0;
+
 	if (input.up) transform.pos.y -= transform.velocity.y;
 	//if (input.down) transform.pos.y += transform.velocity.y;
 	if (input.left && transform.pos.x - (boundingBox.size.x /2)  > 0) transform.pos.x -= transform.velocity.x;
 	if (input.right) transform.pos.x += transform.velocity.x;
+	
+	std::cout << "overlap -> " << boundingBox.preOverlap.x << std::endl;
+	
+	float xDirection = transform.pos.x - transform.prevPos.x;
+	float yDirection = transform.pos.y - transform.prevPos.y;
+
+	if (isOverlapped) {
+		if (xDirection != 0) {
+			float xPush = transform.velocity.x + boundingBox.preOverlap.x;
+			transform.pos.x += xDirection > 0 ? (-1) * xPush : xPush;
+		}
+		if (yDirection != 0) {
+			float yPush = transform.velocity.y + boundingBox.preOverlap.y;
+			transform.pos.y += yDirection > 0 ? (-1) * yPush : yPush;
+		}
+	}
+
 
 	auto& sprite = this->m_player->getComponent<CAnimation>().animation.getSprite();
 	sprite.setPosition(transform.pos.x, transform.pos.y);
-	transform.prevPos = transform.pos;
 }
 
 void ScenePlay::setAnimation(std::shared_ptr<Entity> entity, const std::string& animationName, bool repeat)
@@ -170,7 +191,7 @@ void ScenePlay::sAnimation()
 void ScenePlay::sMovement()
 {
 	sPlayerMovement();
-	sEnemyMovement();
+	//sEnemyMovement();
 }
 
 void ScenePlay::sEnemySpawner()
@@ -181,7 +202,7 @@ void ScenePlay::sEnemySpawner()
 	auto& animation = m_game->getAssets().getAnimation("redWalkKoopa");
 	auto& cAnimation = koopa->addComponent<CAnimation>(animation, true);
 	koopa->addComponent<CBoundingBox>(Vec2(16, 15)); //temporary
-	cAnimation.animation.getSprite().setPosition(transform.pos.x, transform.pos.y);
+	cAnimation.animation.getSprite().setPosition(transform.pos.x, transform.pos.y);	
 	transform.prevPos = transform.pos;
 
 }
@@ -198,6 +219,30 @@ void ScenePlay::sEnemyMovement()
 		sprite.setPosition(transform.pos.x, transform.pos.y);
 		transform.prevPos = transform.pos;
 	}
+}
+
+void ScenePlay::sCollision()
+{
+	auto& entities = m_entities.getEntities();
+	for (auto& a : entities) {
+		if (a->getTag() == "object")
+			continue;
+		for (auto& b : entities) {
+			if (a->getId() == b->getId())
+				continue;
+			auto& aT = a->getComponent<CTransform>();
+			auto& bT = b->getComponent<CTransform>();
+			auto& aB = a->getComponent<CBoundingBox>();
+			auto& bB = b->getComponent<CBoundingBox>();
+			
+			Vec2 distance = { abs(aT.pos.x - bT.pos.x), abs(aT.pos.y - bT.pos.y) };
+			float oX = (aB.size.x / 2) + (bB.size.x / 2) - distance.x; //overlap if oX > 0
+			float oY = (aB.size.y / 2) + (bB.size.y / 2) - distance.y;
+			Vec2 overlap(oX, oY);
+			aB.preOverlap = overlap;
+		}
+	}
+
 }
 
 ScenePlay::ScenePlay(GameEngine* gameEngine, const std::string& levelPath)

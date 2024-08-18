@@ -30,6 +30,7 @@ class CBoundingBox : public Component
 {
 public:
 	Vec2 size = { 0.0f, 0.0f };
+	Vec2 preOverlap = { 0.0f, 0.0f };
 
 	CBoundingBox(){}
 	CBoundingBox(const Vec2& _size) : size(_size){}
