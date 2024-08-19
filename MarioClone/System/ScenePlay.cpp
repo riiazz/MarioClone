@@ -12,6 +12,7 @@ void ScenePlay::update()
 		e->getComponent<CAnimation>().animation.update();
 	}
 	sCollision();
+	sGravity();
 	sMovement();
 	sRender();
 }
@@ -113,7 +114,7 @@ void ScenePlay::sSpawnPlayer()
 	m_player->addComponent<CAnimation>(animation, false);
 	m_player->addComponent<CBoundingBox>(animation.getSize());
 	m_player->addComponent<CState>("idleRight");
-	m_player->addComponent<CGravity>(9.8f);
+	m_player->addComponent<CGravity>(5.8f);
 	m_player->addComponent<CInput>();
 
 	std::cout << "Player -> " << m_player->getId() << std::endl;
@@ -204,6 +205,7 @@ void ScenePlay::sEnemySpawner()
 	koopa->addComponent<CBoundingBox>(Vec2(16, 15)); //temporary
 	cAnimation.animation.getSprite().setPosition(transform.pos.x, transform.pos.y);	
 	transform.prevPos = transform.pos;
+	koopa->addComponent<CGravity>(5.8);
 
 }
 
@@ -227,12 +229,12 @@ void ScenePlay::sCollision()
 	for (auto& a : entities) {
 		if (a->getTag() == "object")
 			continue;
+		auto& aT = a->getComponent<CTransform>();
+		auto& aB = a->getComponent<CBoundingBox>();
 		for (auto& b : entities) {
 			if (a->getId() == b->getId())
 				continue;
-			auto& aT = a->getComponent<CTransform>();
 			auto& bT = b->getComponent<CTransform>();
-			auto& aB = a->getComponent<CBoundingBox>();
 			auto& bB = b->getComponent<CBoundingBox>();
 			
 			Vec2 distance = { abs(aT.pos.x - bT.pos.x), abs(aT.pos.y - bT.pos.y) };
@@ -243,6 +245,19 @@ void ScenePlay::sCollision()
 		}
 	}
 
+}
+
+void ScenePlay::sGravity()
+{
+	auto& entities = m_entities.getEntities();
+	for (auto& e : entities)
+	{
+		if (!e->hasComponent<CTransform>() || !e->hasComponent<CGravity>())
+			continue;
+		auto& transform = e->getComponent<CTransform>();
+		auto& gravity = e->getComponent<CGravity>();
+		transform.pos.y += gravity.gravity;
+	}
 }
 
 ScenePlay::ScenePlay(GameEngine* gameEngine, const std::string& levelPath)

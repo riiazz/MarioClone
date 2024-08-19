@@ -28,6 +28,7 @@ class ScenePlay : public Scene
 	void sEnemySpawner();
 	void sEnemyMovement();
 	void sCollision();
+	void sGravity();
 	void sDebug();
 
 public:
