@@ -147,6 +147,7 @@
   <ItemGroup>
     <Text Include="assets.txt" />
     <Text Include="config.txt" />
+    <Text Include="level1.txt" />
   </ItemGroup>
   <ItemGroup>
     <Font Include="assets\RobotRebels.ttf" />

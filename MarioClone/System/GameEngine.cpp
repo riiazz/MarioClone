@@ -9,7 +9,7 @@ void GameEngine::init(const std::string& configPath, const std::string& assetCon
     m_window.setFramerateLimit(60);
 
 	readAssetConfig(assetConfigPath);
-    changeScene("LEVEL1", std::make_shared<ScenePlay>(this, "2"));
+    changeScene("LEVEL1", std::make_shared<ScenePlay>(this, "level1.txt"));
 }
 
 std::shared_ptr<Scene> GameEngine::currentScene()

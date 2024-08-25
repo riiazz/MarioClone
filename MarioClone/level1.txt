@@ -1,0 +1,6 @@
+--	  gx-gy-cw-ch-sx-sy-sm-gy-b
+Player 4 5 32 32 5 6 8 9.5 bullet
+--   name-gx-gy   
+Tile tile 1 0
+--   name-x-y
+Dec bush 4 1

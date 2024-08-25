@@ -1,4 +1,6 @@
 #include "ScenePlay.h"
+#include <fstream>
+#include <sstream>
 
 void ScenePlay::update()
 {
@@ -100,8 +102,39 @@ void ScenePlay::init(const std::string& levelPath)
 	this->registerAction(sf::Keyboard::Escape, "EXIT");
 	this->registerAction(sf::Keyboard::P, "PAUSE");
 
+	readConfig(levelPath);
+
 	sSpawnPlayer();
 	sEnemySpawner();
+}
+
+void ScenePlay::readConfig(const std::string& levelPath)
+{
+	std::ifstream fileStream(levelPath);
+	if (!fileStream.is_open())
+		std::cout << "Failed to open level file!!! path: " << levelPath << std::endl;
+	std::string line;
+	while (std::getline(fileStream, line)) {
+		std::istringstream s(line);
+		std::string type;
+		s >> type;
+		if (type == "Player") {
+			s >> m_playerConfig.X >> m_playerConfig.Y;
+			s >> m_playerConfig.CW >> m_playerConfig.CH;
+			s >> m_playerConfig.SPEED >> m_playerConfig.JUMP;
+			s >> m_playerConfig.MAXSPEED;
+			s >> m_playerConfig.GRAVITY;
+			s >> m_playerConfig.WEAPON;
+			std::cout << line << std::endl;
+		}
+		else if (type == "Tile") {
+			//create tile entity
+		}
+		else if (type == "Dec") {
+			//create dec entity
+		}
+	}
+	fileStream.close();
 }
 
 void ScenePlay::sSpawnPlayer()

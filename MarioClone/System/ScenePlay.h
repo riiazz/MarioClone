@@ -3,7 +3,7 @@
 
 struct PlayerConfig {
 	//add config properties;
-	float X, Y, CX, CY, SPEED, MAXSPEED, JUMP, GRAVITY;
+	float X, Y, CW, CH, SPEED, MAXSPEED, JUMP, GRAVITY;
 	std::string WEAPON;
 };
 
@@ -20,6 +20,7 @@ class ScenePlay : public Scene
 	
 	//Systems
 	void init(const std::string& levelPath);
+	void readConfig(const std::string& levelPath);
 	void sSpawnPlayer();
 	void sPlayerMovement();
 	void setAnimation(std::shared_ptr<Entity> entity, const std::string& animationName, bool repeat);
