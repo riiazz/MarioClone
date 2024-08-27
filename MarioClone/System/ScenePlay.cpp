@@ -6,7 +6,7 @@ void ScenePlay::update()
 {
 	//std::cout << "CALLS UPDATE FROM SCENE PLAY" << std::endl;
 	m_entities.update();
-	sAnimation();
+	/*sAnimation();
 	m_player->getComponent<CAnimation>().animation.update();
 	auto& enemies = m_entities.getEntities("enemy");
 	for (auto& e : enemies)
@@ -15,7 +15,7 @@ void ScenePlay::update()
 	}
 	sCollision();
 	sGravity();
-	sMovement();
+	sMovement();*/
 	sRender();
 }
 
@@ -85,6 +85,16 @@ void ScenePlay::sRender()
 	for (auto& e : enemies) {
 		window.draw(e->getComponent<CAnimation>().animation.getSprite());
 	}
+
+	//draw grid
+	for (auto& g : m_grid) {
+		window.draw(g);
+	}
+
+	for (auto& c : m_coordiates) {
+		window.draw(c);
+	}
+
 	window.display();
 }
 
@@ -106,6 +116,7 @@ void ScenePlay::init(const std::string& levelPath)
 
 	sSpawnPlayer();
 	sEnemySpawner();
+	sCreatePixelGrid();
 }
 
 void ScenePlay::readConfig(const std::string& levelPath)
@@ -290,6 +301,46 @@ void ScenePlay::sGravity()
 		auto& transform = e->getComponent<CTransform>();
 		auto& gravity = e->getComponent<CGravity>();
 		transform.pos.y += gravity.gravity;
+	}
+}
+
+void ScenePlay::sCreatePixelGrid()
+{
+	int levelWidth = 3584; //read from levelConfig
+	int levelHeight = 480; //read from levelConfig, but for now we can just use window size
+	int pixelSize = 32;
+
+	for (int x = pixelSize; x <= levelWidth; x += pixelSize) {
+		sf::RectangleShape line(sf::Vector2f(1, levelHeight));
+		line.setOrigin(sf::Vector2f(0.5f, levelHeight / 2));
+		line.setPosition(x, m_game->window().getSize().y / 2);
+		line.setFillColor(sf::Color::White);
+		m_grid.push_back(line);
+	}
+	
+	for (int y = pixelSize; y <= levelHeight; y += pixelSize) {
+		sf::RectangleShape line(sf::Vector2f(levelWidth, 1));
+		line.setOrigin(sf::Vector2f(levelWidth/2, 0.5f));
+		line.setPosition(levelWidth/2, y);
+		line.setFillColor(sf::Color::White);
+		m_grid.push_back(line);
+	}
+
+	int r = pixelSize / 2;
+	for (int y = pixelSize; y <= levelHeight; y += pixelSize) {
+		int cY = y / pixelSize;
+		for (int x = pixelSize; x <= levelWidth; x += pixelSize) {
+			int cX = x / pixelSize;
+			sf::Text coordinate;
+			coordinate.setFont(m_game->getAssets().getFont("robotRebels"));
+			coordinate.setString("(" + std::to_string(cX) + "," + std::to_string(cY) + ")");
+			coordinate.setCharacterSize(8);
+			sf::FloatRect localBound = coordinate.getLocalBounds();
+			coordinate.setOrigin(localBound.width / 2, localBound.height / 2);
+			coordinate.setFillColor(sf::Color::White);
+			coordinate.setPosition(x - r, y - r);
+			m_coordiates.push_back(coordinate);
+		}
 	}
 }
 

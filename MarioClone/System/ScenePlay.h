@@ -12,6 +12,8 @@ class ScenePlay : public Scene
 	std::string m_levelPath;
 	std::shared_ptr<Entity> m_player;
 	PlayerConfig m_playerConfig;
+	std::vector<sf::RectangleShape> m_grid;
+	std::vector<sf::Text> m_coordiates;
 
 	void update() override;
 	void sDoAction(const Action& action) override;
@@ -31,6 +33,7 @@ class ScenePlay : public Scene
 	void sCollision();
 	void sGravity();
 	void sDebug();
+	void sCreatePixelGrid();
 
 public:
 	ScenePlay(GameEngine* gameEngine, const std::string& levelPath);
