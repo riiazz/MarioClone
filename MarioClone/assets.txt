@@ -4,7 +4,9 @@ Texture playerIdle assets/images/characters-sprite.png 0 0 16 16
 Texture playerRun assets/images/characters-sprite.png 16 0 48 16
 Texture playerJump assets/images/characters-sprite.png 64 0 16 16
 Texture redWalkKoopa assets/images/RedKoopa.png 38 0 38 28
-Animation playerIdle playerIdle 1 1
-Animation playerRun playerRun 3 5
-Animation playerJump playerJump 1 1
-Animation redWalkKoopa redWalkKoopa 2 15
+Animation playerIdle playerIdle 1 1 1
+Animation playerRun playerRun 3 5 1
+Animation playerJump playerJump 1 1 1
+Animation redWalkKoopa redWalkKoopa 2 15 1
+Texture tile assets/images/world-sprite.png 15 0 32 15
+Animation tile tile 1 1 0

@@ -79,6 +79,12 @@ void ScenePlay::sRender()
 	auto& window = m_game->window();
 
 	window.clear();
+
+	for (auto& t : m_entities.getEntities("tile")) {
+		//std::cout << "test" << std::endl;
+		window.draw(t->getComponent<CAnimation>().animation.getSprite());
+	}
+
 	window.draw(m_player->getComponent<CAnimation>().animation.getSprite());
 	auto& enemies = m_entities.getEntities("enemy");
 
@@ -140,6 +146,16 @@ void ScenePlay::readConfig(const std::string& levelPath)
 		}
 		else if (type == "Tile") {
 			//create tile entity
+			std::string name;
+			float x, y;
+			s >> name >> x >> y;
+
+			sf::Vector2f pos((32 * x) - 32, (32 * y) - 32);
+			auto tile = m_entities.addEntity("tile");
+			auto& animation = m_game->getAssets().getAnimation(name);
+			tile->addComponent<CAnimation>(animation, false);
+			tile->getComponent<CAnimation>().animation.getSprite().setPosition(pos);
+			std::cout << name << " " << pos.x << "," << pos.y << std::endl;
 		}
 		else if (type == "Dec") {
 			//create dec entity

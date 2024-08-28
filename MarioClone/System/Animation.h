@@ -15,7 +15,7 @@ class Animation
 
 public:
 	Animation() = default;
-	Animation(sf::Texture& texture, const std::string& name, int frameCount, int speed);
+	Animation(sf::Texture& texture, const std::string& name, int frameCount, int speed, bool isCenter);
 
 	void init();
 	void update();

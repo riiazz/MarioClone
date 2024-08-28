@@ -1,11 +1,13 @@
 #include "Animation.h"
 
-Animation::Animation(sf::Texture& texture, const std::string& name, int frameCount, int speed)
+Animation::Animation(sf::Texture& texture, const std::string& name, int frameCount, int speed, bool isCenter)
     : m_sprite(texture), m_name(name), m_frameCount(frameCount), m_speed(speed)
 {
     //sprite store full texture of the key frames, then m_size store the size of key frame.
     m_size = Vec2((float)texture.getSize().x / frameCount, (float)texture.getSize().y);
-    m_sprite.setOrigin(m_size.x / 2.0f, m_size.y / 2.0f);
+    if(isCenter)
+        m_sprite.setOrigin(m_size.x / 2.0f, m_size.y / 2.0f);
+
     init();
 }
 

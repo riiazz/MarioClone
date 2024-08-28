@@ -58,9 +58,11 @@ void GameEngine::readAssetConfig(const std::string& assetConfigPath)
 			std::string textureName;
 			std::string path;
 			int frameCount, speed;
+			bool isCenter;
 			s >> name >> textureName;
 			s >> frameCount >> speed;
-			m_assets.addAnimation(name, Animation(m_assets.getTexture(textureName), name, frameCount, speed));
+			s >> isCenter;
+			m_assets.addAnimation(name, Animation(m_assets.getTexture(textureName), name, frameCount, speed, isCenter));
 		}
 	}
 	fileStream.close();
