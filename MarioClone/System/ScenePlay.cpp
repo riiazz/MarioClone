@@ -6,7 +6,7 @@ void ScenePlay::update()
 {
 	//std::cout << "CALLS UPDATE FROM SCENE PLAY" << std::endl;
 	m_entities.update();
-	/*sAnimation();
+	sAnimation();
 	m_player->getComponent<CAnimation>().animation.update();
 	auto& enemies = m_entities.getEntities("enemy");
 	for (auto& e : enemies)
@@ -14,8 +14,8 @@ void ScenePlay::update()
 		e->getComponent<CAnimation>().animation.update();
 	}
 	sCollision();
-	sGravity();
-	sMovement();*/
+	//sGravity();
+	sMovement();
 	sRender();
 }
 
@@ -150,15 +150,20 @@ void ScenePlay::readConfig(const std::string& levelPath)
 			float x, y;
 			s >> name >> x >> y;
 
-			sf::Vector2f pos((32 * x) - 32, (32 * y) - 32);
+			sf::Vector2f pos((m_sceneConfig.pixelSize * x) - m_sceneConfig.pixelSize, (m_sceneConfig.pixelSize * y) - m_sceneConfig.pixelSize);
 			auto tile = m_entities.addEntity("tile");
 			auto& animation = m_game->getAssets().getAnimation(name);
+			tile->addComponent<CTransform>(Vec2(pos.x, pos.y), Vec2(0, 0), Vec2(1, 1), 0);
 			tile->addComponent<CAnimation>(animation, false);
 			tile->getComponent<CAnimation>().animation.getSprite().setPosition(pos);
+			tile->addComponent<CBoundingBox>(animation.getSize());
 			std::cout << name << " " << pos.x << "," << pos.y << std::endl;
 		}
 		else if (type == "Dec") {
 			//create dec entity
+		}
+		else if (type == "Scene") {
+			s >> m_sceneConfig.levelWidth >> m_sceneConfig.levelHeight >> m_sceneConfig.pixelSize;
 		}
 	}
 	fileStream.close();
@@ -166,15 +171,24 @@ void ScenePlay::readConfig(const std::string& levelPath)
 
 void ScenePlay::sSpawnPlayer()
 {
+	int pixelSize = m_sceneConfig.pixelSize;
 	m_player = m_entities.addEntity("player");
-	auto& t = m_player->addComponent<CTransform>(Vec2(100, 150), Vec2(5.0f, 5.0f), Vec2(1.0f, 1.0f), 0);
+
+	Vec2 pos = {	//normalize character position so that it's at the middle of grid;
+					(m_playerConfig.X * pixelSize) - pixelSize / 2,				//x
+					(m_playerConfig.Y * pixelSize) - m_playerConfig.CH / 2		//y
+			   };	
+
+	Vec2 vel = { m_playerConfig.SPEED, m_playerConfig.JUMP };
+
+	auto& t = m_player->addComponent<CTransform>(pos, vel, Vec2(1.0f, 1.0f), 0);
 
 	auto& animation = m_game->getAssets().getAnimation("playerIdle");
 	animation.getSprite().setPosition(t.pos.x, t.pos.y);
 	m_player->addComponent<CAnimation>(animation, false);
 	m_player->addComponent<CBoundingBox>(animation.getSize());
 	m_player->addComponent<CState>("idleRight");
-	m_player->addComponent<CGravity>(5.8f);
+	m_player->addComponent<CGravity>(m_playerConfig.GRAVITY);
 	m_player->addComponent<CInput>();
 
 	std::cout << "Player -> " << m_player->getId() << std::endl;
@@ -287,7 +301,7 @@ void ScenePlay::sCollision()
 {
 	auto& entities = m_entities.getEntities();
 	for (auto& a : entities) {
-		if (a->getTag() == "object")
+		if (a->getTag() == "tile")
 			continue;
 		auto& aT = a->getComponent<CTransform>();
 		auto& aB = a->getComponent<CBoundingBox>();
@@ -322,9 +336,9 @@ void ScenePlay::sGravity()
 
 void ScenePlay::sCreatePixelGrid()
 {
-	int levelWidth = 3584; //read from levelConfig
-	int levelHeight = 480; //read from levelConfig, but for now we can just use window size
-	int pixelSize = 32;
+	int levelWidth = m_sceneConfig.levelWidth; //read from levelConfig
+	int levelHeight = m_sceneConfig.levelHeight; //read from levelConfig, but for now we can just use window size
+	int pixelSize = m_sceneConfig.pixelSize;
 
 	for (int x = pixelSize; x <= levelWidth; x += pixelSize) {
 		sf::RectangleShape line(sf::Vector2f(1, levelHeight));
@@ -361,7 +375,7 @@ void ScenePlay::sCreatePixelGrid()
 }
 
 ScenePlay::ScenePlay(GameEngine* gameEngine, const std::string& levelPath)
-	: Scene(gameEngine), m_levelPath(levelPath)
+	: Scene(gameEngine)
 {
 	init(levelPath);
 }

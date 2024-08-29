@@ -7,13 +7,18 @@ struct PlayerConfig {
 	std::string WEAPON;
 };
 
+struct SceneConfig {
+	int levelWidth, levelHeight, pixelSize;
+};
+
 class ScenePlay : public Scene
 {
-	std::string m_levelPath;
+	//std::string m_levelPath;
 	std::shared_ptr<Entity> m_player;
 	PlayerConfig m_playerConfig;
 	std::vector<sf::RectangleShape> m_grid;
 	std::vector<sf::Text> m_coordiates;
+	SceneConfig m_sceneConfig;
 
 	void update() override;
 	void sDoAction(const Action& action) override;
