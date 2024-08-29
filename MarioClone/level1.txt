@@ -3,11 +3,11 @@ Scene 3584 480 32
 --	  gx-gy-cw-ch-sx-sy-sm-gy-b
 Player 2 5 16 16 5 6 8 4.8 none
 --   name-gx-gy   
-Tile tile 1 6
-Tile tile 2 6
-Tile tile 3 6
-Tile tile 4 6
-Tile tile 5 6
+Tile tile 1 5.5
+Tile tile 2 5.5
+Tile tile 3 5.5
+Tile tile 4 5.5
 Tile tile 5 5.5
+Tile tile 5 5
 --   name-x-y
 Dec bush 4 1

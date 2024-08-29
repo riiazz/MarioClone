@@ -150,14 +150,14 @@ void ScenePlay::readConfig(const std::string& levelPath)
 			float x, y;
 			s >> name >> x >> y;
 
-			sf::Vector2f pos((m_sceneConfig.pixelSize * x) - m_sceneConfig.pixelSize, (m_sceneConfig.pixelSize * y) - m_sceneConfig.pixelSize);
-			auto tile = m_entities.addEntity("tile");
 			auto& animation = m_game->getAssets().getAnimation(name);
+			sf::Vector2f pos((m_sceneConfig.pixelSize * x) - animation.getSize().x / 2, (m_sceneConfig.pixelSize * y) - animation.getSize().y / 2);
+			auto tile = m_entities.addEntity("tile");
 			tile->addComponent<CTransform>(Vec2(pos.x, pos.y), Vec2(0, 0), Vec2(1, 1), 0);
 			tile->addComponent<CAnimation>(animation, false);
 			tile->getComponent<CAnimation>().animation.getSprite().setPosition(pos);
 			tile->addComponent<CBoundingBox>(animation.getSize());
-			std::cout << name << " " << pos.x << "," << pos.y << std::endl;
+			std::cout << name << " " << animation.getSize().x << "," << animation.getSize().y << std::endl;
 		}
 		else if (type == "Dec") {
 			//create dec entity
@@ -209,7 +209,7 @@ void ScenePlay::sPlayerMovement()
 	if (input.left && transform.pos.x - (boundingBox.size.x /2)  > 0) transform.pos.x -= transform.velocity.x;
 	if (input.right) transform.pos.x += transform.velocity.x;
 	
-	std::cout << "overlap -> " << boundingBox.preOverlap.x << std::endl;
+	//std::cout << "overlap -> " << boundingBox.preOverlap.x << std::endl;
 	
 	float xDirection = transform.pos.x - transform.prevPos.x;
 	float yDirection = transform.pos.y - transform.prevPos.y;
@@ -308,6 +308,7 @@ void ScenePlay::sCollision()
 		for (auto& b : entities) {
 			if (a->getId() == b->getId())
 				continue;
+
 			auto& bT = b->getComponent<CTransform>();
 			auto& bB = b->getComponent<CBoundingBox>();
 			
@@ -316,9 +317,10 @@ void ScenePlay::sCollision()
 			float oY = (aB.size.y / 2) + (bB.size.y / 2) - distance.y;
 			Vec2 overlap(oX, oY);
 			aB.preOverlap = overlap;
+			if (overlap.x > 0 && overlap.y > 0)
+				break;
 		}
 	}
-
 }
 
 void ScenePlay::sGravity()

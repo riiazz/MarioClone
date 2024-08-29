@@ -9,4 +9,4 @@ Animation playerRun playerRun 3 5 1
 Animation playerJump playerJump 1 1 1
 Animation redWalkKoopa redWalkKoopa 2 15 1
 Texture tile assets/images/world-sprite.png 15 0 32 15
-Animation tile tile 1 1 0
+Animation tile tile 1 1 1
