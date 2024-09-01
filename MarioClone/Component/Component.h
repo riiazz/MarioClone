@@ -73,7 +73,7 @@ class CGravity : public Component
 {
 public:
 	float gravity = 0;
-
+	bool isOnGround = true;
 	CGravity(){}
 	CGravity(float g) : gravity(g){}
 };

@@ -59,6 +59,11 @@ void Vec2::operator/=(const Vec2& v)
 	this->y /= v.y;
 }
 
+Vec2 Vec2::operator*(const float v) const
+{
+	return Vec2(this->x * v, this->y * v);
+}
+
 void Vec2::normalize()
 {
 	int l = length();

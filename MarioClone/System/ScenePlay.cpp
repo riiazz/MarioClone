@@ -13,8 +13,7 @@ void ScenePlay::update()
 	{
 		e->getComponent<CAnimation>().animation.update();
 	}
-	sCollision();
-	//sGravity();
+	//sCollision();
 	sMovement();
 	sRender();
 }
@@ -45,6 +44,13 @@ void ScenePlay::sDoAction(const Action& action)
 		else if (action.name() == "PAUSE")
 		{
 			setPaused(!m_paused);
+		}
+		else if(action.name() == "GRID")
+		{
+			m_showGrid = !m_showGrid;
+		}
+		else if (action.name() == "BOUNDINGBOX") {
+			m_showBoundingBox = !m_showBoundingBox;
 		}
 		
 		//toggle_grid
@@ -92,9 +98,31 @@ void ScenePlay::sRender()
 		window.draw(e->getComponent<CAnimation>().animation.getSprite());
 	}
 
+	//bounding box
+	if (m_showBoundingBox) {
+		for (auto e : m_entities.getEntities())
+		{
+			if (e->hasComponent<CBoundingBox>())
+			{
+				auto& box = e->getComponent<CBoundingBox>();
+				auto& transform = e->getComponent<CTransform>();
+				sf::RectangleShape rect;
+				rect.setSize(sf::Vector2f(box.size.x, box.size.y));
+				rect.setOrigin(sf::Vector2f(box.size.x / 2, box.size.y / 2));
+				rect.setPosition(transform.pos.x, transform.pos.y);
+				rect.setFillColor(sf::Color(0, 0, 0, 0));
+				rect.setOutlineColor(sf::Color(255, 255, 255, 255));
+				rect.setOutlineThickness(1);
+				window.draw(rect);
+			}
+		}
+	}
+
 	//draw grid
-	for (auto& g : m_grid) {
-		window.draw(g);
+	if (m_showGrid) {
+		for (auto& g : m_grid) {
+			window.draw(g);
+		}
 	}
 
 	for (auto& c : m_coordiates) {
@@ -117,6 +145,9 @@ void ScenePlay::init(const std::string& levelPath)
 	this->registerAction(sf::Keyboard::D, "RIGHT");
 	this->registerAction(sf::Keyboard::Escape, "EXIT");
 	this->registerAction(sf::Keyboard::P, "PAUSE");
+	this->registerAction(sf::Keyboard::G, "GRID");
+	this->registerAction(sf::Keyboard::B, "BOUNDINGBOX");
+
 
 	readConfig(levelPath);
 
@@ -138,11 +169,13 @@ void ScenePlay::readConfig(const std::string& levelPath)
 		if (type == "Player") {
 			s >> m_playerConfig.X >> m_playerConfig.Y;
 			s >> m_playerConfig.CW >> m_playerConfig.CH;
+			s >> m_playerConfig.ACC;
 			s >> m_playerConfig.SPEED >> m_playerConfig.JUMP;
 			s >> m_playerConfig.MAXSPEED;
 			s >> m_playerConfig.GRAVITY;
 			s >> m_playerConfig.WEAPON;
 			std::cout << line << std::endl;
+			std::cout << "player acc -> " << m_playerConfig.ACC << " x,y vel -> " << m_playerConfig.SPEED << "," << m_playerConfig.JUMP << std::endl;
 		}
 		else if (type == "Tile") {
 			//create tile entity
@@ -199,32 +232,63 @@ void ScenePlay::sPlayerMovement()
 	auto& transform = this->m_player->getComponent<CTransform>();
 	auto& input = this->m_player->getComponent<CInput>();
 	auto& boundingBox = this->m_player->getComponent<CBoundingBox>();
+	auto& gravity = m_player->getComponent<CGravity>();
 
 	transform.prevPos = transform.pos;
 
-	bool isOverlapped = boundingBox.preOverlap.x > 0 && boundingBox.preOverlap.y > 0;
+	Vec2 acceleration = { 0,  0};
 
-	if (input.up) transform.pos.y -= transform.velocity.y;
-	//if (input.down) transform.pos.y += transform.velocity.y;
-	if (input.left && transform.pos.x - (boundingBox.size.x /2)  > 0) transform.pos.x -= transform.velocity.x;
-	if (input.right) transform.pos.x += transform.velocity.x;
-	
-	//std::cout << "overlap -> " << boundingBox.preOverlap.x << std::endl;
-	
-	float xDirection = transform.pos.x - transform.prevPos.x;
-	float yDirection = transform.pos.y - transform.prevPos.y;
 
-	if (isOverlapped) {
-		if (xDirection != 0) {
-			float xPush = transform.velocity.x + boundingBox.preOverlap.x;
-			transform.pos.x += xDirection > 0 ? (-1) * xPush : xPush;
-		}
-		if (yDirection != 0) {
-			float yPush = transform.velocity.y + boundingBox.preOverlap.y;
-			transform.pos.y += yDirection > 0 ? (-1) * yPush : yPush;
-		}
+	if (!gravity.isOnGround) acceleration.y = gravity.gravity;
+
+	if (input.up && gravity.isOnGround) acceleration.y -= 10;
+	if (input.left && transform.pos.x - (boundingBox.size.x/2)  > 0) acceleration.x = m_playerConfig.ACC * (-1);
+	if (input.right) acceleration.x = m_playerConfig.ACC;
+
+	acceleration.x += transform.velocity.x * -0.3f; //friction has to be minus
+	transform.velocity += acceleration;
+	Vec2 predictedPos = transform.pos + transform.velocity + (acceleration * 0.5f); //Kinematic equation
+
+	Vec2 overlap;
+	gravity.isOnGround = false;
+	bool collided = false;
+	int push = 0;
+	for (auto& e : m_entities.getEntities()) {
+		if (!e->hasComponent<CBoundingBox>())
+			continue;
+		if (e->getId() == m_player->getId())
+			continue;
+		if (collided = sCheckCollision(m_player, e, predictedPos, overlap))
+			break;
 	}
 
+
+	if (collided) {
+		Vec2 direction = predictedPos - transform.prevPos;
+
+		if (overlap.x < overlap.y) {
+			if (direction.x > 0) { // Collision from left
+				predictedPos.x = transform.prevPos.x - overlap.x;
+			}
+			else if (direction.x < 0) { // Collision from right
+				predictedPos.x = transform.prevPos.x + overlap.x;
+			}
+			transform.velocity.x = 0; // Stop horizontal movement
+		}
+		
+		if (direction.y > 0) { // Collision from down
+			predictedPos.y = transform.prevPos.y;
+			transform.velocity.y = 0; 
+			gravity.isOnGround = true;
+		} 
+		else if (overlap.y < overlap.x && direction.y < 0) {
+			predictedPos.y = transform.prevPos.y + overlap.y;
+			transform.velocity.y = 0;
+		}
+		
+	}
+
+	transform.pos = predictedPos;
 
 	auto& sprite = this->m_player->getComponent<CAnimation>().animation.getSprite();
 	sprite.setPosition(transform.pos.x, transform.pos.y);
@@ -295,6 +359,21 @@ void ScenePlay::sEnemyMovement()
 		sprite.setPosition(transform.pos.x, transform.pos.y);
 		transform.prevPos = transform.pos;
 	}
+}
+
+const bool ScenePlay::sCheckCollision(std::shared_ptr<Entity> actor, std::shared_ptr<Entity> other, Vec2& predictedPos, Vec2& _overlap) const
+{
+	auto& aB = actor->getComponent<CBoundingBox>();
+
+	auto& bT = other->getComponent<CTransform>();
+	auto& bB = other->getComponent<CBoundingBox>();
+
+	Vec2 distance = { abs(predictedPos.x - bT.pos.x), abs(predictedPos.y - bT.pos.y) };
+	float oX = (aB.size.x / 2) + (bB.size.x / 2) - distance.x; //overlap if oX > 0
+	float oY = (aB.size.y / 2) + (bB.size.y / 2) - distance.y;
+	_overlap = { oX, oY };
+
+	return _overlap.x > 0 && _overlap.y > 0;
 }
 
 void ScenePlay::sCollision()

@@ -3,7 +3,7 @@
 
 struct PlayerConfig {
 	//add config properties;
-	float X, Y, CW, CH, SPEED, MAXSPEED, JUMP, GRAVITY;
+	float X, Y, CW, CH, ACC, SPEED, MAXSPEED, JUMP, GRAVITY;
 	std::string WEAPON;
 };
 
@@ -19,6 +19,8 @@ class ScenePlay : public Scene
 	std::vector<sf::RectangleShape> m_grid;
 	std::vector<sf::Text> m_coordiates;
 	SceneConfig m_sceneConfig;
+	bool m_showGrid = false;
+	bool m_showBoundingBox = false;
 
 	void update() override;
 	void sDoAction(const Action& action) override;
@@ -35,6 +37,7 @@ class ScenePlay : public Scene
 	void sMovement();
 	void sEnemySpawner();
 	void sEnemyMovement();
+	const bool sCheckCollision(std::shared_ptr<Entity> actor, std::shared_ptr<Entity> other, Vec2& predictedPos, Vec2& _overlap) const;
 	void sCollision();
 	void sGravity();
 	void sDebug();

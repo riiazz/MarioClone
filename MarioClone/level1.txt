@@ -1,13 +1,24 @@
 --    levelwidth-levelheight-pixelsize
 Scene 3584 480 32
---	  gx-gy-cw-ch-sx-sy-sm-gy-b
-Player 2 5 16 16 5 6 8 4.8 none
+--	  gx-gy-cw-ch-acc-sx-sy-sm-gy-b
+Player 3 5 16 16 0.8 0 0 7 1 none
 --   name-gx-gy   
+Tile tile 2 5
 Tile tile 1 5.5
 Tile tile 2 5.5
 Tile tile 3 5.5
 Tile tile 4 5.5
 Tile tile 5 5.5
 Tile tile 5 5
+Tile tile 6 4
+Tile tile 7 3
+Tile tile 8 3
+Tile tile 9 3
+Tile tile 10 4
+Tile tile 11 4
+Tile tile 6 5.5
+Tile tile 7 5.5
+Tile tile 8 5.5
+Tile tile 9 5.5
 --   name-x-y
 Dec bush 4 1

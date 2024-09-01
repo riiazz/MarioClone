@@ -17,6 +17,7 @@ public:
 	void operator -= (const Vec2& v);
 	void operator *= (const Vec2& v);
 	void operator /= (const Vec2& v);
+	Vec2 operator * (const float v) const;
 
 	void normalize();
 	double length() const;
