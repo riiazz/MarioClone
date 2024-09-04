@@ -239,7 +239,7 @@ void ScenePlay::sPlayerMovement()
 	Vec2 acceleration = { 0,  0};
 
 
-	if (!gravity.isOnGround) acceleration.y = gravity.gravity;
+	//if (!gravity.isOnGround) acceleration.y = gravity.gravity;
 
 	if (input.up && gravity.isOnGround) acceleration.y -= 10;
 	if (input.left && transform.pos.x - (boundingBox.size.x/2)  > 0) acceleration.x = m_playerConfig.ACC * (-1);
@@ -247,46 +247,37 @@ void ScenePlay::sPlayerMovement()
 
 	acceleration.x += transform.velocity.x * -0.3f; //friction has to be minus
 	transform.velocity += acceleration;
-	Vec2 predictedPos = transform.pos + transform.velocity + (acceleration * 0.5f); //Kinematic equation
+	//Vec2 predictedPos = transform.pos + transform.velocity + (acceleration * 0.5f); //Kinematic equation
 
 	Vec2 overlap;
 	gravity.isOnGround = false;
 	bool collided = false;
 	int push = 0;
+
+	//test param
+	Vec2 contactPoint = { 0,0 };
+	Vec2 contactNormal = { 0,0 };
+	float contactTime = 0;
 	for (auto& e : m_entities.getEntities()) {
 		if (!e->hasComponent<CBoundingBox>())
 			continue;
 		if (e->getId() == m_player->getId())
 			continue;
-		if (collided = sCheckCollision(m_player, e, predictedPos, overlap))
+		//if (collided = sCheckCollision(m_player, e, predictedPos, overlap))
+			//break;
+		if (collided = m_collisionManager.dynamicRectVsRect(m_player, e, contactPoint, contactNormal, contactTime)) {
 			break;
+		}
 	}
 
 
 	if (collided) {
-		Vec2 direction = predictedPos - transform.prevPos;
-
-		if (overlap.x < overlap.y) {
-			if (direction.x > 0) { // Collision from left
-				predictedPos.x = transform.prevPos.x - overlap.x;
-			}
-			else if (direction.x < 0) { // Collision from right
-				predictedPos.x = transform.prevPos.x + overlap.x;
-			}
-			transform.velocity.x = 0; // Stop horizontal movement
-		}
-		
-		if (direction.y > 0) { // Collision from down
-			predictedPos.y = transform.prevPos.y;
-			transform.velocity.y = 0; 
-			gravity.isOnGround = true;
-		} 
-		else if (overlap.y < overlap.x && direction.y < 0) {
-			predictedPos.y = transform.prevPos.y + overlap.y;
-			transform.velocity.y = 0;
-		}
-		
+		transform.velocity += contactNormal * Vec2(std::abs(transform.velocity.x), std::abs(transform.velocity.y)) * (1 - contactTime);
+		acceleration = { 0,0 };
+		gravity.isOnGround = true;		
 	}
+
+	Vec2 predictedPos = transform.pos + transform.velocity + (acceleration * 0.5f); //Kinematic equation
 
 	transform.pos = predictedPos;
 

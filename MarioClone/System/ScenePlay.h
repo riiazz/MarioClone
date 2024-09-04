@@ -1,5 +1,6 @@
 #pragma once
 #include "Scene.h"
+#include "../System/Collision.h"
 
 struct PlayerConfig {
 	//add config properties;
@@ -21,6 +22,7 @@ class ScenePlay : public Scene
 	SceneConfig m_sceneConfig;
 	bool m_showGrid = false;
 	bool m_showBoundingBox = false;
+	Collision m_collisionManager;
 
 	void update() override;
 	void sDoAction(const Action& action) override;

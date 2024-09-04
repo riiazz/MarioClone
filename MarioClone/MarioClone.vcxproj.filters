@@ -45,6 +45,9 @@
     <ClCompile Include="Component\Action.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="System\Collision.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="config.txt">
@@ -87,6 +90,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Component\Action.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="System\Collision.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

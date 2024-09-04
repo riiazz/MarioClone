@@ -75,3 +75,8 @@ double Vec2::length() const
 {
 	return sqrtf((this->x* this->x) + (this->y* this->y));
 }
+
+std::string Vec2::print() const
+{
+	return std::to_string(x) + "," + std::to_string(y);
+}

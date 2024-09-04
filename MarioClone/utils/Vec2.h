@@ -1,4 +1,6 @@
 #pragma once
+#include <iostream>
+#include <string>
 class Vec2
 {
 public:
@@ -21,5 +23,6 @@ public:
 
 	void normalize();
 	double length() const;
+	std::string print() const;
 };
 
