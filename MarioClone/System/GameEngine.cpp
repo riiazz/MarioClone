@@ -70,16 +70,18 @@ void GameEngine::readAssetConfig(const std::string& assetConfigPath)
 
 void GameEngine::run()
 {
+	sf::Clock clock;
     while (isRunning()) {
-        update();
+		sf::Time elapsed = clock.restart();
+        update(elapsed);
     }
     m_window.close();
 }
 
-void GameEngine::update()
+void GameEngine::update(sf::Time& elapsedTime)
 {
     sUserInput();
-    currentScene()->update();
+    currentScene()->update(elapsedTime);
 }
 
 void GameEngine::quit()

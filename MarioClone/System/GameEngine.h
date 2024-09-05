@@ -25,7 +25,7 @@ public:
 	GameEngine(const std::string& configPath, const std::string& assetConfigPath) { init(configPath, assetConfigPath);};
 
 	void run();
-	void update();
+	void update(sf::Time& elapsedTime);
 	void quit();
 	void changeScene(const std::string& sceneName, std::shared_ptr<Scene> scene);
 	Assets& getAssets();

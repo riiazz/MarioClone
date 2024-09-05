@@ -24,7 +24,7 @@ class ScenePlay : public Scene
 	bool m_showBoundingBox = false;
 	Collision m_collisionManager;
 
-	void update() override;
+	void update(sf::Time elapsedTime) override;
 	void sDoAction(const Action& action) override;
 	void sRender() override;
 	void onEnd() override;
@@ -33,10 +33,10 @@ class ScenePlay : public Scene
 	void init(const std::string& levelPath);
 	void readConfig(const std::string& levelPath);
 	void sSpawnPlayer();
-	void sPlayerMovement();
+	void sPlayerMovement(sf::Time elapsedTime);
 	void setAnimation(std::shared_ptr<Entity> entity, const std::string& animationName, bool repeat);
 	void sAnimation();
-	void sMovement();
+	void sMovement(sf::Time elapsedTime);
 	void sEnemySpawner();
 	void sEnemyMovement();
 	const bool sCheckCollision(std::shared_ptr<Entity> actor, std::shared_ptr<Entity> other, Vec2& predictedPos, Vec2& _overlap) const;

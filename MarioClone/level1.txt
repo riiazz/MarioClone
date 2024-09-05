@@ -1,7 +1,7 @@
 --    levelwidth-levelheight-pixelsize
 Scene 3584 480 32
 --	  gx-gy-cw-ch-acc-sx-sy-sm-gy-b
-Player 3 4 16 16 0.8 2 2 7 1 none
+Player 3 4 16 16 30 2 120 7 5 none
 --   name-gx-gy   
 Tile tile 2 5
 Tile tile 1 5.5

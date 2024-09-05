@@ -2,7 +2,7 @@
 #include <fstream>
 #include <sstream>
 
-void ScenePlay::update()
+void ScenePlay::update(sf::Time elapsedTime)
 {
 	//std::cout << "CALLS UPDATE FROM SCENE PLAY" << std::endl;
 	m_entities.update();
@@ -14,7 +14,7 @@ void ScenePlay::update()
 		e->getComponent<CAnimation>().animation.update();
 	}
 	//sCollision();
-	sMovement();
+	sMovement(elapsedTime);
 	sRender();
 }
 
@@ -227,57 +227,54 @@ void ScenePlay::sSpawnPlayer()
 	std::cout << "Player -> " << m_player->getId() << std::endl;
 }
 
-void ScenePlay::sPlayerMovement()
+void ScenePlay::sPlayerMovement(sf::Time elapsedTime)
 {
 	auto& transform = this->m_player->getComponent<CTransform>();
 	auto& input = this->m_player->getComponent<CInput>();
 	auto& boundingBox = this->m_player->getComponent<CBoundingBox>();
 	auto& gravity = m_player->getComponent<CGravity>();
 
-	transform.prevPos = transform.pos;
-
 	Vec2 acceleration = { 0,  0};
 
+	if (!gravity.isOnGround) acceleration.y = gravity.gravity;
 
-	//if (!gravity.isOnGround) acceleration.y = gravity.gravity;
-
-	if (input.up && gravity.isOnGround) acceleration.y -= 10;
-	if (input.left && transform.pos.x - (boundingBox.size.x/2)  > 0) acceleration.x = m_playerConfig.ACC * (-1);
-	if (input.right) acceleration.x = m_playerConfig.ACC;
+	if (input.up && gravity.isOnGround) acceleration.y -= m_playerConfig.JUMP;
+	if (input.left && transform.pos.x - (boundingBox.size.x/2)  > 0) acceleration.x += m_playerConfig.ACC * (-1);
+	if (input.right) acceleration.x += m_playerConfig.ACC;
 
 	acceleration.x += transform.velocity.x * -0.3f; //friction has to be minus
-	transform.velocity += acceleration;
-	//Vec2 predictedPos = transform.pos + transform.velocity + (acceleration * 0.5f); //Kinematic equation
-
-	Vec2 overlap;
+	transform.velocity += acceleration + (acceleration * 0.5f);
+	
 	gravity.isOnGround = false;
-	bool collided = false;
-	int push = 0;
 
 	//test param
 	Vec2 contactPoint = { 0,0 };
 	Vec2 contactNormal = { 0,0 };
 	float contactTime = 0;
+	std::vector<std::pair<std::shared_ptr<Entity>,float>> collideOrder;
 	for (auto& e : m_entities.getEntities()) {
 		if (!e->hasComponent<CBoundingBox>())
 			continue;
 		if (e->getId() == m_player->getId())
 			continue;
-		//if (collided = sCheckCollision(m_player, e, predictedPos, overlap))
-			//break;
-		if (collided = m_collisionManager.dynamicRectVsRect(m_player, e, contactPoint, contactNormal, contactTime)) {
-			break;
+		if (m_collisionManager.dynamicRectVsRect(m_player, e, contactPoint, contactNormal, contactTime, elapsedTime.asSeconds())) {
+			collideOrder.push_back({ e, contactTime });
 		}
 	}
 
+	//Sort collided objects
+	std::sort(collideOrder.begin(), collideOrder.end(), [](const std::pair<std::shared_ptr<Entity>,float>& a, const std::pair<std::shared_ptr<Entity>,float>& b)
+	{
+		return a.second < b.second;
+	});
 
-	if (collided) {
-		transform.velocity += contactNormal * Vec2(std::abs(transform.velocity.x), std::abs(transform.velocity.y)) * (1 - contactTime);
-		acceleration = { 0,0 };
-		gravity.isOnGround = true;		
+	for (auto& e : collideOrder) {
+		if (m_collisionManager.resolveDynamicRectVsRect(m_player, e.first, elapsedTime.asSeconds())){
+			//std::cout << "setelah: " << gravity.isOnGround << " vel -> " << transform.velocity.print() << " cp -> " << contactNormal.print() << std::endl;
+		}
 	}
 
-	Vec2 predictedPos = transform.pos + transform.velocity + (acceleration * 0.5f); //Kinematic equation
+	Vec2 predictedPos = transform.pos + transform.velocity * elapsedTime.asSeconds();
 
 	transform.pos = predictedPos;
 
@@ -318,9 +315,9 @@ void ScenePlay::sAnimation()
 	}
 }
 
-void ScenePlay::sMovement()
+void ScenePlay::sMovement(sf::Time elapsedTime)
 {
-	sPlayerMovement();
+	sPlayerMovement(elapsedTime);
 	//sEnemyMovement();
 }
 

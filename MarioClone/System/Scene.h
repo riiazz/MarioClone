@@ -22,7 +22,7 @@ public:
 	Scene(GameEngine* engine) : m_game(engine) {}
 	virtual ~Scene(){}
 
-	virtual void update() = 0;
+	virtual void update(sf::Time elapsedTime) = 0;
 	virtual void sDoAction(const Action& action) = 0;
 	virtual void sRender() = 0;
 	virtual void onEnd() = 0;

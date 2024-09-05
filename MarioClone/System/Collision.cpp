@@ -70,15 +70,28 @@ bool Collision::rayVsRect(const std::shared_ptr<Entity>& origin, const Vec2& ray
     return true;
 }
 
-bool Collision::dynamicRectVsRect(const std::shared_ptr<Entity>& origin, const std::shared_ptr<Entity>& target, Vec2& contactPoint, Vec2& contactNormal, float& contactTime)
+bool Collision::dynamicRectVsRect(const std::shared_ptr<Entity>& origin, const std::shared_ptr<Entity>& target, Vec2& contactPoint, Vec2& contactNormal, float& contactTime, const float timeStep)
 {
     auto& vel = origin->getComponent<CTransform>().velocity;
     //if (vel.x == 0 && vel.y)
     //    return false;
 
-    if (rayVsRect(origin, vel, target, contactPoint, contactNormal, contactTime)) {
-        std::cout << contactTime << std::endl;
+    if (rayVsRect(origin, vel * timeStep, target, contactPoint, contactNormal, contactTime)) {
         return (contactTime >= 0.0f && contactTime < 1.0f);
+    }
+    return false;
+}
+
+bool Collision::resolveDynamicRectVsRect(const std::shared_ptr<Entity>& origin, const std::shared_ptr<Entity>& target, const float timeStep)
+{
+    Vec2 contactPoint, contactNormal;
+    float contactTime = 0;
+    if (dynamicRectVsRect(origin, target, contactPoint, contactNormal, contactTime, timeStep)) {
+        auto& transform = origin->getComponent<CTransform>();
+        transform.velocity += contactNormal * Vec2(std::abs(transform.velocity.x), std::abs(transform.velocity.y));
+        if (contactNormal.y == -1)
+            origin->getComponent<CGravity>().isOnGround = true;
+        return true;
     }
     return false;
 }
