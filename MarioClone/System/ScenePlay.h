@@ -8,6 +8,11 @@ struct PlayerConfig {
 	std::string WEAPON;
 };
 
+struct EnemyConfig {
+	float X, Y, CW, CH, SPEED, GRAVITY;
+	std::string animationName;
+};
+
 struct SceneConfig {
 	int levelWidth, levelHeight, pixelSize;
 };
@@ -37,7 +42,7 @@ class ScenePlay : public Scene
 	void setAnimation(std::shared_ptr<Entity> entity, const std::string& animationName, bool repeat);
 	void sAnimation();
 	void sMovement(sf::Time elapsedTime);
-	void sEnemySpawner();
+	void sEnemySpawner(const EnemyConfig& con);
 	void sEnemyMovement();
 	const bool sCheckCollision(std::shared_ptr<Entity> actor, std::shared_ptr<Entity> other, Vec2& predictedPos, Vec2& _overlap) const;
 	void sCollision();

@@ -1,7 +1,10 @@
 --    levelwidth-levelheight-pixelsize
 Scene 3584 480 32
 --	  gx-gy-cw-ch-acc-sx-sy-sm-gy-b
-Player 3 4 16 16 30 2 120 7 5 none
+Player 3 4 15 14 30 2 120 7 5 none
+--    gx-gy-cw-ch-s-gy-animationName
+Enemy 7 5 13 23 10 5 redWalkKoopa
+Enemy 10 3.5 13 23 10 5 redWalkKoopa
 --   name-gx-gy   
 Tile tile 2 5
 Tile tile 1 5.5

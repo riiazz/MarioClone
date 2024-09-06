@@ -152,7 +152,6 @@ void ScenePlay::init(const std::string& levelPath)
 	readConfig(levelPath);
 
 	sSpawnPlayer();
-	sEnemySpawner();
 	sCreatePixelGrid();
 }
 
@@ -176,6 +175,12 @@ void ScenePlay::readConfig(const std::string& levelPath)
 			s >> m_playerConfig.WEAPON;
 			std::cout << line << std::endl;
 			std::cout << "player acc -> " << m_playerConfig.ACC << " x,y vel -> " << m_playerConfig.SPEED << "," << m_playerConfig.JUMP << std::endl;
+		}
+		else if (type == "Enemy") {
+			EnemyConfig con;
+			s >> con.X >> con.Y >> con.CW >> con.CH >> con.SPEED >> con.GRAVITY;
+			s >> con.animationName;
+			sEnemySpawner(con);
 		}
 		else if (type == "Tile") {
 			//create tile entity
@@ -213,13 +218,14 @@ void ScenePlay::sSpawnPlayer()
 			   };	
 
 	Vec2 vel = { m_playerConfig.SPEED, m_playerConfig.JUMP };
+	Vec2 boundingBox = { m_playerConfig.CW, m_playerConfig.CH };
 
 	auto& t = m_player->addComponent<CTransform>(pos, vel, Vec2(1.0f, 1.0f), 0);
 
 	auto& animation = m_game->getAssets().getAnimation("playerIdle");
 	animation.getSprite().setPosition(t.pos.x, t.pos.y);
 	m_player->addComponent<CAnimation>(animation, false);
-	m_player->addComponent<CBoundingBox>(animation.getSize());
+	m_player->addComponent<CBoundingBox>(boundingBox);
 	m_player->addComponent<CState>("idleRight");
 	m_player->addComponent<CGravity>(m_playerConfig.GRAVITY);
 	m_player->addComponent<CInput>();
@@ -247,7 +253,6 @@ void ScenePlay::sPlayerMovement(sf::Time elapsedTime)
 	
 	gravity.isOnGround = false;
 
-	//test param
 	Vec2 contactPoint = { 0,0 };
 	Vec2 contactNormal = { 0,0 };
 	float contactTime = 0;
@@ -321,17 +326,26 @@ void ScenePlay::sMovement(sf::Time elapsedTime)
 	//sEnemyMovement();
 }
 
-void ScenePlay::sEnemySpawner()
+void ScenePlay::sEnemySpawner(const EnemyConfig& con)
 {
-	auto koopa = m_entities.addEntity("enemy");
-	auto& transform = koopa->addComponent<CTransform>(Vec2(200, 150), Vec2(5.0f, 5.0f), Vec2(0, 0), 0);
-	koopa->addComponent<CState>("walk");
-	auto& animation = m_game->getAssets().getAnimation("redWalkKoopa");
-	auto& cAnimation = koopa->addComponent<CAnimation>(animation, true);
-	koopa->addComponent<CBoundingBox>(Vec2(16, 15)); //temporary
+	auto enemy = m_entities.addEntity("enemy");
+	int pixelSize = m_sceneConfig.pixelSize;
+	Vec2 pos = {	//normalize character position so that it's at the middle of grid;
+					(con.X * pixelSize) - pixelSize / 2,	//x
+					(con.Y * pixelSize) - con.CH / 2		//y
+	};
+
+	Vec2 vel = { con.SPEED, 0.0f };
+	Vec2 boundingBox = { con.CW, con.CH };
+
+	auto& transform = enemy->addComponent<CTransform>(pos, vel, Vec2(0, 0), 0);
+	enemy->addComponent<CState>("walk");
+	auto& animation = m_game->getAssets().getAnimation(con.animationName);
+	auto& cAnimation = enemy->addComponent<CAnimation>(animation, true);
+	enemy->addComponent<CBoundingBox>(boundingBox);
+	enemy->addComponent<CGravity>(con.GRAVITY);
+
 	cAnimation.animation.getSprite().setPosition(transform.pos.x, transform.pos.y);	
-	transform.prevPos = transform.pos;
-	koopa->addComponent<CGravity>(5.8);
 
 }
 
