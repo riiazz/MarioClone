@@ -12,5 +12,6 @@ public:
 	bool dynamicRectVsRect(const std::shared_ptr<Entity>& origin, const std::shared_ptr<Entity>& target, Vec2& contactPoint, Vec2& contactNormal, float& contactTime, const float timeStep);
 
 	bool resolveDynamicRectVsRect(const std::shared_ptr<Entity>& origin, const std::shared_ptr<Entity>& target, const float timeStep);
+	bool resolveEnemyDynamicRectVsRect(const std::shared_ptr<Entity>& origin, const std::shared_ptr<Entity>& target, const float timeStep);
 };
 

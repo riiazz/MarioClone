@@ -323,7 +323,7 @@ void ScenePlay::sAnimation()
 void ScenePlay::sMovement(sf::Time elapsedTime)
 {
 	sPlayerMovement(elapsedTime);
-	//sEnemyMovement();
+	sEnemyMovement(elapsedTime);
 }
 
 void ScenePlay::sEnemySpawner(const EnemyConfig& con)
@@ -344,22 +344,56 @@ void ScenePlay::sEnemySpawner(const EnemyConfig& con)
 	auto& cAnimation = enemy->addComponent<CAnimation>(animation, true);
 	enemy->addComponent<CBoundingBox>(boundingBox);
 	enemy->addComponent<CGravity>(con.GRAVITY);
-
+	transform.ACC = con.SPEED;
 	cAnimation.animation.getSprite().setPosition(transform.pos.x, transform.pos.y);	
 
 }
 
-void ScenePlay::sEnemyMovement()
+void ScenePlay::sEnemyMovement(sf::Time elapsedTime)
 {
 	auto& entities = m_entities.getEntities("enemy");
 	for (auto& e : entities) {
 		auto& transform = e->getComponent<CTransform>();
 		auto& boundingBox = e->getComponent<CBoundingBox>();
-		if (transform.pos.x - (boundingBox.size.x / 2) > 0) transform.pos.x -= transform.velocity.x;
+		auto& gravity = e->getComponent<CGravity>();
+
+		Vec2 acceleration = { 0, 0 };
+
+		if (!gravity.isOnGround) acceleration.y += gravity.gravity;
+		if (transform.pos.x - (boundingBox.size.x / 2) > 0) acceleration.x += transform.ACC;
+
+		gravity.isOnGround = false;
+
+		acceleration.x += transform.velocity.x * -0.3f; //friction has to be minus
+		transform.velocity += acceleration; //+ (acceleration * 0.5f);
+
+		Vec2 contactPoint = { 0,0 };
+		Vec2 contactNormal = { 0,0 };
+		float contactTime = 0;
+		std::vector<std::pair<std::shared_ptr<Entity>, float>> collideOrder;
+		for (auto& t : m_entities.getEntities("tile")) {
+			if (m_collisionManager.dynamicRectVsRect(e, t, contactPoint, contactNormal, contactTime, elapsedTime.asSeconds())) {
+				collideOrder.push_back({ t, contactTime });
+				//std::cout << "test" << std::endl;
+			}
+		}
+
+		//Sort collided objects
+		std::sort(collideOrder.begin(), collideOrder.end(), [](const std::pair<std::shared_ptr<Entity>, float>& a, const std::pair<std::shared_ptr<Entity>, float>& b)
+		{
+			return a.second < b.second;
+		});
+
+		for (auto& t : collideOrder) {
+			if (m_collisionManager.resolveEnemyDynamicRectVsRect(e, t.first, elapsedTime.asSeconds())) {
+				//std::cout << "setelah: " << gravity.isOnGround << " vel -> " << transform.velocity.print() << " cp -> " << contactNormal.print() << std::endl;
+			}
+		}
+
+		transform.pos += transform.velocity * elapsedTime.asSeconds();
 
 		auto& sprite = e->getComponent<CAnimation>().animation.getSprite();
 		sprite.setPosition(transform.pos.x, transform.pos.y);
-		transform.prevPos = transform.pos;
 	}
 }
 

@@ -18,6 +18,7 @@ public:
 	Vec2 velocity = { 0.0f, 0.0f };
 	Vec2 scale = { 0.0f, 0.0f };
 	float angle = 0;
+	float ACC = 0;
 
 	CTransform(){}
 	CTransform(const Vec2& _pos) : pos(_pos){}

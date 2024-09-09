@@ -95,3 +95,19 @@ bool Collision::resolveDynamicRectVsRect(const std::shared_ptr<Entity>& origin, 
     }
     return false;
 }
+
+bool Collision::resolveEnemyDynamicRectVsRect(const std::shared_ptr<Entity>& origin, const std::shared_ptr<Entity>& target, const float timeStep)
+{
+    Vec2 contactPoint, contactNormal;
+    float contactTime = 0;
+    if (dynamicRectVsRect(origin, target, contactPoint, contactNormal, contactTime, timeStep)) {
+        auto& transform = origin->getComponent<CTransform>();
+        transform.velocity += contactNormal * Vec2(std::abs(transform.velocity.x), std::abs(transform.velocity.y));
+        if (contactNormal.y == -1)
+            origin->getComponent<CGravity>().isOnGround = true;
+        if (contactNormal.x == 1 || contactNormal.x == -1)
+            transform.ACC *= -1;
+        return true;
+    }
+    return false;
+}

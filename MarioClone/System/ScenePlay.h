@@ -43,7 +43,7 @@ class ScenePlay : public Scene
 	void sAnimation();
 	void sMovement(sf::Time elapsedTime);
 	void sEnemySpawner(const EnemyConfig& con);
-	void sEnemyMovement();
+	void sEnemyMovement(sf::Time elapsedTime);
 	const bool sCheckCollision(std::shared_ptr<Entity> actor, std::shared_ptr<Entity> other, Vec2& predictedPos, Vec2& _overlap) const;
 	void sCollision();
 	void sGravity();

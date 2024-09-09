@@ -3,8 +3,8 @@ Scene 3584 480 32
 --	  gx-gy-cw-ch-acc-sx-sy-sm-gy-b
 Player 3 4 15 14 30 2 120 7 5 none
 --    gx-gy-cw-ch-s-gy-animationName
-Enemy 7 5 13 23 10 5 redWalkKoopa
-Enemy 10 3.5 13 23 10 5 redWalkKoopa
+Enemy 7 5 13 23 -13 5 redWalkKoopa
+Enemy 10 3.5 13 23 -10 5 redWalkKoopa
 --   name-gx-gy   
 Tile tile 2 5
 Tile tile 1 5.5
@@ -16,12 +16,12 @@ Tile tile 5 5
 Tile tile 6 4
 Tile tile 7 3
 Tile tile 8 3
-Tile tile 9 3
 Tile tile 10 4
 Tile tile 11 4
 Tile tile 6 5.5
 Tile tile 7 5.5
 Tile tile 8 5.5
 Tile tile 9 5.5
+Tile tile 9 5
 --   name-x-y
 Dec bush 4 1
