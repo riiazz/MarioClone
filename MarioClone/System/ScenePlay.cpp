@@ -24,8 +24,15 @@ void ScenePlay::sDoAction(const Action& action)
 	{
 		if (action.name() == "JUMP")
 		{
+			auto& curState = m_player->getComponent<CState>().state;
 			m_player->getComponent<CInput>().up = true;
-			m_player->getComponent<CState>().state = "jump";
+
+			if (curState == "idleLeft") {
+				m_player->getComponent<CState>().state = "jumpLeft";
+			}
+			else if (curState == "idleRight") {
+				m_player->getComponent<CState>().state = "jumpRight";
+			}
 		}
 		else if (action.name() == "LEFT")
 		{
@@ -52,10 +59,7 @@ void ScenePlay::sDoAction(const Action& action)
 		else if (action.name() == "BOUNDINGBOX") {
 			m_showBoundingBox = !m_showBoundingBox;
 		}
-		
-		//toggle_grid
 		//toggle_texture
-		//toggle_collision
 	} 
 	else if (action.type() == "END")
 	{
@@ -239,14 +243,23 @@ void ScenePlay::sPlayerMovement(sf::Time elapsedTime)
 	auto& input = this->m_player->getComponent<CInput>();
 	auto& boundingBox = this->m_player->getComponent<CBoundingBox>();
 	auto& gravity = m_player->getComponent<CGravity>();
+	auto& state = m_player->getComponent<CState>().state;
 
 	Vec2 acceleration = { 0,  0};
 
 	if (!gravity.isOnGround) acceleration.y = gravity.gravity;
 
 	if (input.up && gravity.isOnGround) acceleration.y -= m_playerConfig.JUMP;
-	if (input.left && transform.pos.x - (boundingBox.size.x/2)  > 0) acceleration.x += m_playerConfig.ACC * (-1);
-	if (input.right) acceleration.x += m_playerConfig.ACC;
+
+	if (input.left && transform.pos.x - (boundingBox.size.x / 2) > 0) {
+		acceleration.x += m_playerConfig.ACC * (-1);
+		state = "runLeft";
+	}
+
+	if (input.right) {
+		acceleration.x += m_playerConfig.ACC;
+		state = "runRight";
+	}
 
 	acceleration.x += transform.velocity.x * -0.3f; //friction has to be minus
 	transform.velocity += acceleration + (acceleration * 0.5f);
@@ -281,20 +294,30 @@ void ScenePlay::sPlayerMovement(sf::Time elapsedTime)
 
 	Vec2 predictedPos = transform.pos + transform.velocity * elapsedTime.asSeconds();
 
+	if (input.up) {
+		if (state == "runRight" || state == "idleRight") {
+			state = "jumpRight";
+		}
+		else if (state == "runLeft" || state == "idleLeft"){
+			state = "jumpLeft";
+		}
+	}
+	else {
+		if (state == "jumpRight") {
+			state = "idleRight";
+		}
+		else if (state == "jumpLeft") {
+			state = "idleLeft";
+		}
+	}
+
 	transform.pos = predictedPos;
 
 	auto& sprite = this->m_player->getComponent<CAnimation>().animation.getSprite();
 	sprite.setPosition(transform.pos.x, transform.pos.y);
 }
 
-void ScenePlay::setAnimation(std::shared_ptr<Entity> entity, const std::string& animationName, bool repeat)
-{
-	if (entity->getComponent<CAnimation>().animation.getName() == animationName)
-		return;
-	entity->getComponent<CAnimation>() = CAnimation(m_game->getAssets().getAnimation(animationName), repeat);
-}
-
-void ScenePlay::sAnimation()
+void ScenePlay::sSetPlayerAnimation()
 {
 	auto& state = m_player->getComponent<CState>().state;
 	auto& animation = m_player->getComponent<CAnimation>();
@@ -315,9 +338,27 @@ void ScenePlay::sAnimation()
 		setAnimation(m_player, "playerRun", true);
 		animation.animation.getSprite().setScale(-1, 1);
 	}
-	else if (state == "jump") {
+	else if (state == "jumpRight") {
 		setAnimation(m_player, "playerJump", true);
+		animation.animation.getSprite().setScale(1, 1);
 	}
+	else if (state == "jumpLeft") {
+		setAnimation(m_player, "playerJump", true);
+		animation.animation.getSprite().setScale(-1, 1);
+	}
+}
+
+void ScenePlay::setAnimation(std::shared_ptr<Entity> entity, const std::string& animationName, bool repeat)
+{
+	if (entity->getComponent<CAnimation>().animation.getName() == animationName)
+		return;
+	entity->getComponent<CAnimation>() = CAnimation(m_game->getAssets().getAnimation(animationName), repeat);
+}
+
+void ScenePlay::sAnimation()
+{
+	sSetPlayerAnimation();
+	sSetEnemyAnimation();
 }
 
 void ScenePlay::sMovement(sf::Time elapsedTime)
@@ -339,7 +380,7 @@ void ScenePlay::sEnemySpawner(const EnemyConfig& con)
 	Vec2 boundingBox = { con.CW, con.CH };
 
 	auto& transform = enemy->addComponent<CTransform>(pos, vel, Vec2(0, 0), 0);
-	enemy->addComponent<CState>("walk");
+	enemy->addComponent<CState>("walkLeft");
 	auto& animation = m_game->getAssets().getAnimation(con.animationName);
 	auto& cAnimation = enemy->addComponent<CAnimation>(animation, true);
 	enemy->addComponent<CBoundingBox>(boundingBox);
@@ -394,6 +435,23 @@ void ScenePlay::sEnemyMovement(sf::Time elapsedTime)
 
 		auto& sprite = e->getComponent<CAnimation>().animation.getSprite();
 		sprite.setPosition(transform.pos.x, transform.pos.y);
+	}
+}
+
+void ScenePlay::sSetEnemyAnimation()
+{
+	for (auto& e : m_entities.getEntities("enemy")) {
+		auto& state = e->getComponent<CState>().state;
+		auto& animation = e->getComponent<CAnimation>();
+
+		if (state == "walkLeft") {
+			setAnimation(e, "redWalkKoopa", true);
+			animation.animation.getSprite().setScale(1, 1);
+		}
+		else if (state == "walkRight") {
+			setAnimation(e, "redWalkKoopa", true);
+			animation.animation.getSprite().setScale(-1, 1);
+		}
 	}
 }
 

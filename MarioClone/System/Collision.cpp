@@ -105,8 +105,15 @@ bool Collision::resolveEnemyDynamicRectVsRect(const std::shared_ptr<Entity>& ori
         transform.velocity += contactNormal * Vec2(std::abs(transform.velocity.x), std::abs(transform.velocity.y));
         if (contactNormal.y == -1)
             origin->getComponent<CGravity>().isOnGround = true;
-        if (contactNormal.x == 1 || contactNormal.x == -1)
+        if (contactNormal.x == 1 || contactNormal.x == -1) {
             transform.ACC *= -1;
+            if (transform.ACC <= 0) {
+                origin->getComponent<CState>().state = "walkLeft";
+            }
+            else {
+                origin->getComponent<CState>().state = "walkRight";
+            }
+        }
         return true;
     }
     return false;

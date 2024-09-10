@@ -39,11 +39,13 @@ class ScenePlay : public Scene
 	void readConfig(const std::string& levelPath);
 	void sSpawnPlayer();
 	void sPlayerMovement(sf::Time elapsedTime);
+	void sSetPlayerAnimation();
 	void setAnimation(std::shared_ptr<Entity> entity, const std::string& animationName, bool repeat);
 	void sAnimation();
 	void sMovement(sf::Time elapsedTime);
 	void sEnemySpawner(const EnemyConfig& con);
 	void sEnemyMovement(sf::Time elapsedTime);
+	void sSetEnemyAnimation();
 	const bool sCheckCollision(std::shared_ptr<Entity> actor, std::shared_ptr<Entity> other, Vec2& predictedPos, Vec2& _overlap) const;
 	void sCollision();
 	void sGravity();
