@@ -89,8 +89,12 @@ bool Collision::resolveDynamicRectVsRect(const std::shared_ptr<Entity>& origin, 
     if (dynamicRectVsRect(origin, target, contactPoint, contactNormal, contactTime, timeStep)) {
         auto& transform = origin->getComponent<CTransform>();
         transform.velocity += contactNormal * Vec2(std::abs(transform.velocity.x), std::abs(transform.velocity.y));
-        if (contactNormal.y == -1)
+        if (contactNormal.y == -1){
+            if(origin->getTag() == "player" && target->getTag() == "enemy")
+                target->getComponent<CState>().state = "dead";
             origin->getComponent<CGravity>().isOnGround = true;
+
+        }
         return true;
     }
     return false;

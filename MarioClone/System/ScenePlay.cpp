@@ -451,6 +451,10 @@ void ScenePlay::sSetEnemyAnimation()
 		else if (state == "walkRight") {
 			setAnimation(e, "redWalkKoopa", true);
 			animation.animation.getSprite().setScale(-1, 1);
+		} 
+		else if(state == "dead"){
+			std::cout << "entity no: " << e->getId() << " is dead" << std::endl;
+			e->destroy();
 		}
 	}
 }
